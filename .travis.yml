@@ -19,7 +19,8 @@ deploy:
     file: $GOPATH/bin/logfilewriter
     on:
         repo: palette-software/insight-tester
-        branch: travis-setup
+        tags: true
+        all_branches: true
 
 notifications:
     email: false
