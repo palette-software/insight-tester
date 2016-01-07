@@ -5,12 +5,7 @@ go:
 
 before_deploy:
     - cd logfilewriter
-    - go build
-    - ls -lah
     - go install
-    - git status
-    - echo $GOPATH
-    - ls -lah $GOPATH/bin
 
 deploy:
     provider: releases
