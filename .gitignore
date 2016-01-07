@@ -27,4 +27,4 @@ _testmain.go
 *.swp
 
 # IntelliJ IDEA files
-.idea
+.idea/
