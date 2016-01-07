@@ -5,7 +5,10 @@ go:
 
 script:
     - cd logfilewriter
+    - go build
+    - ls -lah
     - go install
+    - git status
     - echo $GOPATH
     - ls -lah $GOPATH/bin
 
