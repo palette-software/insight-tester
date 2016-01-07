@@ -3,11 +3,9 @@ language: go
 go:
     - tip
 
-script:
+before_deploy:
     - cd logfilewriter
     - go build
-    - md releases
-    - mv logfilewriter releases/
     - ls -lah
     - go install
     - git status
