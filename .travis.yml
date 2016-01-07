@@ -6,6 +6,8 @@ go:
 script:
     - cd logfilewriter
     - go install
+    - echo $GOPATH
+    - ls -lah $(GOPATH)/bin
 
 deploy:
     provider: releases
