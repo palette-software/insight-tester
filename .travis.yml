@@ -3,6 +3,10 @@ language: go
 go:
     - tip
 
+script:
+    - cd logfilewriter
+    - go install
+
 deploy:
     provider: releases
     api_key:
@@ -10,4 +14,3 @@ deploy:
     file: $(GOPATH)/bin/logfilewriter
     on:
         repo: palette-software/insight-tester
-        tags: true
