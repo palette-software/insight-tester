@@ -25,3 +25,6 @@ _testmain.go
 
 # vim files
 *.swp
+
+# IntelliJ IDEA files
+.idea

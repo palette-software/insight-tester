@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;insight-tester&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../stash" />
+      <root url="file://$PROJECT_DIR$/.." />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/.idea" />
+      <root url="file://$PROJECT_DIR$/../nu7hatch/gouuid/.git" />
+      <root url="file://$PROJECT_DIR$/../huin/mqtt/.git" />
+      <root url="file://$PROJECT_DIR$/../../stash/mqtt-stage/.git" />
+      <root url="file://$PROJECT_DIR$/../../stash/mqtt-stage/.idea" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/.git" />
+    </excluded>
+  </library>
+</component>
