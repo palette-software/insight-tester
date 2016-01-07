@@ -10,3 +10,4 @@ deploy:
     file: $(GOPATH)/bin/logfilewriter
     on:
         repo: palette-software/insight-tester
+        tags: true
