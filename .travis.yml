@@ -35,8 +35,6 @@ after_script:
     - mkdir -p $CURRENT_ENV_DIR
     - cp -f logfilewriter $CURRENT_ENV_DIR
     - zip -r $CURRENT_ENV_DIR.zip $CURRENT_ENV_DIR
-
-deploy:
     - echo "Creating Github realase..."
     - RELEASE_ID=`curl -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\": \"$VERSION\"}" "https://api.github.com/repos/palette-software/insight-tester/releases"| jsawk "return this.id"`
     - if [ $? -ne 0 ]; then echo "creating new release failed"; exit 10; fi
