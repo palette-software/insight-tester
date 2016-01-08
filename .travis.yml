@@ -8,18 +8,10 @@ env:
   - GIMME_OS=windows GIMME_ARCH=386
   - GIMME_OS=windows GIMME_ARCH=amd64
 
-go:
-    - 1.4
-
 script:
-    - cd logfilewriter
-    - go install -v
+    - go build ./logfilewriter
 
 after_script:
-    - ls -latr
-    - cd $GOPATH
-    - ls -latr
-    - cd bin
     - ls -latr
 
 deploy:
