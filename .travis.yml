@@ -12,6 +12,7 @@ go:
     - 1.4
 
 script:
+    - cd logfilewriter
     - go install -v
 
 after_script:
