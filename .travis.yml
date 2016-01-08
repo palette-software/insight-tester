@@ -12,12 +12,13 @@ go:
     - 1.4
 
 script:
-    - cd logfilewriter
-    - go build -v ./...
+    - go install -v
 
 after_script:
     - ls -latr
-    - cd logfilewriter
+    - cd $GOPATH
+    - ls -latr
+    - cd bin
     - ls -latr
 
 deploy:
