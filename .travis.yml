@@ -21,7 +21,8 @@ before_install:
   - go env
 
 script:
-    - go build -v ./logfilewriter
+    - cd logfilewriter
+    - go build -v ./...
 
 after_script:
     - ls -latr
