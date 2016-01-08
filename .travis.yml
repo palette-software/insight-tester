@@ -1,12 +1,15 @@
 language: go
 
+go:
+    - 1.4
+
 env:
-  - GIMME_OS=darwin GIMME_ARCH=386
-  - GIMME_OS=darwin GIMME_ARCH=amd64
-  - GIMME_OS=linux GIMME_ARCH=386
-  - GIMME_OS=linux GIMME_ARCH=amd64
-  - GIMME_OS=windows GIMME_ARCH=386
-  - GIMME_OS=windows GIMME_ARCH=amd64
+    - GIMME_OS=darwin GIMME_ARCH=386
+    - GIMME_OS=darwin GIMME_ARCH=amd64
+    - GIMME_OS=linux GIMME_ARCH=386
+    - GIMME_OS=linux GIMME_ARCH=amd64
+    - GIMME_OS=windows GIMME_ARCH=386
+    - GIMME_OS=windows GIMME_ARCH=amd64
 
 script:
     - go build ./logfilewriter
@@ -19,6 +22,7 @@ deploy:
     api_key:
         secure: cARqMhh3Rq/Wtf4k0aHAy53a/V/rfkTAeqXDEbVpySNXXVTv4dpf5/iaOZMdoyHI8GdSXASoH7/JCd1rfND2IaOOXlOLbuueYm5eptN7YA166TtT03+zrSV3SjE+bfOYIeVFujq742WusQADy6+j5xPGHL6MaLbwvorAMvb2s7+SyRDJMHKhDhDhMiGyDnBW+Ec3VvKcwRpoogfVuZMSDRxk26l1Zfz6eBRiNqDjTGCqWvQXoDj29owSD1tbV6t785AKlCBEkA7i/YpLmp13qwzr0A70MYDkTOMU0UJzWVmO58YMWX+4/zN0I/cbU6dFxL7k+3kU13W+RiB1BNjUjLCylBeusN18dpTyrW/Qo+2nMqYPA2uxnifiqJ96MSQ/W4LkvJAVe5SF6VJjlLzbioeCGlqIoyE9Wc5/iS+ppcMvSwt+hGrd5R0OqWJNGMfxRfLqwC6Wj3E4eWhHZHFzCbPRCzEXoEdT9b0Zr6xyJ52oIPM3wR3e/6EqDGoTGmgrsSEXfFPBd2XuvSmdbkFHBZQO3p5dG43J+0Tn2Z46aah1F3FCpGghMDdHvyynMm7HBO3hnG8qxSxNjM1oepOnpwU06ZuucJ+9z9VhmCqNQPb6VPS8Z6C0xYp65AIhA/dKCZhqm2onCFRfMem4VWvvpuhY3m6Zaa/KA+SFi/FW5Ss=
     file: $GOPATH/bin/logfilewriter
+    skip_cleanup: true
     on:
         repo: palette-software/insight-tester
         tags: true
