@@ -22,10 +22,11 @@ before_install:
 
 script:
     - cd logfilewriter
-    - go build -v ./...
+    - go install -v ./...
 
 after_script:
     - ls -latr
+    - ls -latr $GOPATH/bin/
 
 deploy:
     provider: releases
