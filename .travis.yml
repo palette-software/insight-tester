@@ -32,7 +32,7 @@ before_install:
 script:
     - cd logfilewriter
     - go install -v ./...
-    - git tag -a $VERSION -m $TAG_MESSAGE
+    - git tag -a "$VERSION" -m $TAG_MESSAGE
     - git push origin --force --tags
 
 after_script:
