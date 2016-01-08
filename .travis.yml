@@ -27,7 +27,7 @@ script:
     - cd logfilewriter
     - go install -v ./...
 
-after_script:
+after_success:
     - cd $GOPATH/bin/
     - export CURRENT_ENV_DIR=${GIMME_OS}_${GIMME_ARCH}
     - export PCKG_FILE=${CURRENT_ENV_DIR}.zip
