@@ -27,6 +27,7 @@ script:
 after_script:
     - ls -latr
     - ls -latr $GOPATH/bin/
+    - cd $GOPATH/bin/
     - zip -r $(GIMME_OS)_$(GIMME_ARCH).zip $(GIMME_OS)_$(GIMME_ARCH)
 
 deploy:
