@@ -40,12 +40,7 @@ after_script:
     - if [ $? -ne 0 ]; then echo "creating new release failed"; exit 10; fi
     - echo $RELEASE_ID
     - echo "Uploading Github release asset..."
-    - curl --progress-bar \
-           -H "Content-Type: application/octet-stream" \
-           -H "Authorization: token $GITHUB_TOKEN" \
-           --retry 3 \
-           --data-binary @$PCKG_FILE \
-           "https://uploads.github.com/repos/palette-software/insight-tester/releases/$RELEASE_ID/assets?name=$CURRENT_ENV_DIR.zip"
+    - curl --progress-bar -H "Content-Type: application/octet-stream" -H "Authorization: token $GITHUB_TOKEN" --retry 3 --data-binary @$PCKG_FILE "https://uploads.github.com/repos/palette-software/insight-tester/releases/$RELEASE_ID/assets?name=$CURRENT_ENV_DIR.zip"
     - if [ $? -ne 0 ]; then echo "uploading release asset failed"; exit 10; fi
 
 notifications:
