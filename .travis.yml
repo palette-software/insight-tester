@@ -33,7 +33,7 @@ script:
     - cd logfilewriter
     - go install -v ./...
     - echo "git tag -a $VERSION -m $TAG_MESSAGE"
-    - git tag -a -f $VERSION -m "$TAG_MESSAGE"
+    - git tag $VERSION-lw
     - git push origin --force --tags
 
 after_script:
