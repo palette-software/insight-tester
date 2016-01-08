@@ -47,9 +47,9 @@ func readFile(fileName string, transfer chan string) (error) {
     return nil
 }
 
-func writeFile(path string, fileName string, transfer chan string, wg* sync.WaitGroup) (error) {
+func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error) {
     defer wg.Done()
-    file, err := os.Create(path + fileName)
+    file, err := os.Create(fileName)
     if err != nil {
         Error.Printf("Error opening file: %v", err)
         return err
@@ -83,8 +83,8 @@ func main() {
             wg.Add(1)
             Info.Println("Processing file: ", file.Name())
             transfer := make(chan string)
-            go writeFile(os.Args[2], file.Name(), transfer, &wg)
-            go readFile(file.Name(), transfer)
+            go writeFile(os.Args[2] + file.Name(), transfer, &wg)
+            go readFile(os.Args[1] + file.Name(), transfer)
         }
     }
     wg.Wait()
