@@ -12,7 +12,7 @@ go:
     - tip
 
 after_script:
-    - cd logfilewriter
+    - cd $GOPATH/bin/logfilewriter
     - ls -latr
 
 before_deploy:
