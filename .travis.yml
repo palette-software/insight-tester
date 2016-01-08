@@ -12,6 +12,7 @@ go:
     - tip
 
 after_script:
+    - ls -latr
     - cd $GOPATH/bin/logfilewriter
     - ls -latr
 
