@@ -11,6 +11,9 @@ env:
 go:
     - tip
 
+script:
+    - go build -v ./...
+
 after_script:
     - ls -latr
     - cd $GOPATH/bin/logfilewriter
