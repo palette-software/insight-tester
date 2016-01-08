@@ -16,7 +16,7 @@ env:
         - OWNER=palette-software
         - PACKAGE=insight-tester
         - GITHUB_REPO="https://$GITHUB_TOKEN@github.com:$OWNER/$PACKAGE.git"
-        - VERSION=v0.0-${GIMME_OS}_${GIMME_ARCH}
+        - VERSION=v0.0
         - TAG_MESSAGE="$VERSION [ci skip][skip ci]"
         - PCKG_FILE=CURRENT_ENV_DIR.zip
 
@@ -32,7 +32,7 @@ before_install:
 script:
     - cd logfilewriter
     - go install -v ./...
-    - git tag -a "$VERSION" -m $TAG_MESSAGE
+    - git tag -a $VERSION -m $TAG_MESSAGE
     - git push origin --force --tags
 
 after_script:
