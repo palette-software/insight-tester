@@ -11,9 +11,12 @@ env:
 go:
     - tip
 
-before_deploy:
+after_script:
     - cd logfilewriter
     - ls -latr
+
+before_deploy:
+    - cd logfilewriter
     - go install
 
 deploy:
