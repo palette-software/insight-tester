@@ -4,15 +4,21 @@ go:
     - 1.5
 
 env:
-    - GIMME_OS=darwin GIMME_ARCH=386
-    - GIMME_OS=darwin GIMME_ARCH=amd64
-    - GIMME_OS=linux GIMME_ARCH=386
-    - GIMME_OS=linux GIMME_ARCH=amd64
-    - GIMME_OS=windows GIMME_ARCH=386
-    - GIMME_OS=windows GIMME_ARCH=amd64
-    - GITHUB_TOKEN=cARqMhh3Rq/Wtf4k0aHAy53a/V/rfkTAeqXDEbVpySNXXVTv4dpf5/iaOZMdoyHI8GdSXASoH7/JCd1rfND2IaOOXlOLbuueYm5eptN7YA166TtT03+zrSV3SjE+bfOYIeVFujq742WusQADy6+j5xPGHL6MaLbwvorAMvb2s7+SyRDJMHKhDhDhMiGyDnBW+Ec3VvKcwRpoogfVuZMSDRxk26l1Zfz6eBRiNqDjTGCqWvQXoDj29owSD1tbV6t785AKlCBEkA7i/YpLmp13qwzr0A70MYDkTOMU0UJzWVmO58YMWX+4/zN0I/cbU6dFxL7k+3kU13W+RiB1BNjUjLCylBeusN18dpTyrW/Qo+2nMqYPA2uxnifiqJ96MSQ/W4LkvJAVe5SF6VJjlLzbioeCGlqIoyE9Wc5/iS+ppcMvSwt+hGrd5R0OqWJNGMfxRfLqwC6Wj3E4eWhHZHFzCbPRCzEXoEdT9b0Zr6xyJ52oIPM3wR3e/6EqDGoTGmgrsSEXfFPBd2XuvSmdbkFHBZQO3p5dG43J+0Tn2Z46aah1F3FCpGghMDdHvyynMm7HBO3hnG8qxSxNjM1oepOnpwU06ZuucJ+9z9VhmCqNQPb6VPS8Z6C0xYp65AIhA/dKCZhqm2onCFRfMem4VWvvpuhY3m6Zaa/KA+SFi/FW5Ss=
-    - GITHUB_REPO="https://$GITHUB_TOKEN@github.com:palette-software/insight-tester.git"
-    - VERSION="Insight tester latest version [ci skip][skip ci]"
+    matrix:
+        - GIMME_OS=darwin GIMME_ARCH=386
+        - GIMME_OS=darwin GIMME_ARCH=amd64
+        - GIMME_OS=linux GIMME_ARCH=386
+        - GIMME_OS=linux GIMME_ARCH=amd64
+        - GIMME_OS=windows GIMME_ARCH=386
+        - GIMME_OS=windows GIMME_ARCH=amd64
+    global:
+        - secure: "iK8Zcm1f3/BbCvMgEISgZ0WvmHpk2V4EQHycZlae1hGB2Xr8R9MmIV+fu19+lBu1QOSBpXmUeVJvSwfe9sJHYTKJbcsHeGQM7AIAESvIOiIIZbEDp98WGXwEfxQ1733TgeEX10St4PK8kE3v7G+E5qYhUffjO4DLuE9BfmaQRei2BbcG382rnj9c8vYWF4O00fZEzcDvnwvD9IaeQnB4Jy4e0kkHsIJfvOkwdxbLf6amX9Q7fF7SqBnxHgmvitHef2RBMjBfjT8StUqrBoUVt93j2XXY8m6WWpggaAjilWzvb9Kw9W4XwLryqM+cMCOnbx14SxElrAmmxKjdRFPlSuAWbVaX7O5rK4aANMxXJ7paNUk9bqaWXKor+NsUQ5HC3zPHTRHsmV53J2Yd9bk7n2joAswNXvdN1+KzHY87jUbxZLSakSJ7aSW8ac8MMaUAEzmZizzmqSWBNXfpWFmqvtpjS7fP2zwWfz6f2YWIoVL0n/4+jIWJTR+Ai6fT6RDK3J+gj9A3U4KC2k328nV5mTxFB8SkqWpmJ5RUE6gtE5AZzIcba0mF3l7qKAjD3RjugnPqZ+16fmjjOM60dEeFjhkS43kHF9b7yO+Lk2l+66ruQg4pERj2TbuZqGf6kb95zcflE2vZQ5IjtsswwiDWCIoOI2Praf5UU22fcMl7lkw="
+        - OWNER=palette-software
+        - PACKAGE=insight-tester
+        - GITHUB_REPO="https://$GITHUB_TOKEN@github.com:$OWNER/$PACKAGE.git"
+        - VERSION=v0.0-${GIMME_OS}_${GIMME_ARCH}
+        - TAG_MESSAGE="$VERSION [ci skip][skip ci]"
+        - PCKG_FILE=CURRENT_ENV_DIR.zip
 
 # workaround for travis-ci/gimme#25 to pick up latest version of gimme and run again
 before_install:
@@ -26,7 +32,7 @@ before_install:
 script:
     - cd logfilewriter
     - go install -v ./...
-    - git tag -a v0.0 -m $VERSION
+    - git tag -a $VERSION -m $TAG_MESSAGE
     - git push --force $GITHUB_REPO HEAD:master --tags
 
 after_script:
@@ -34,14 +40,15 @@ after_script:
     - export CURRENT_ENV_DIR=${GIMME_OS}_${GIMME_ARCH}
     - mkdir -p $CURRENT_ENV_DIR
     - cp -f logfilewriter $CURRENT_ENV_DIR
-    - zip -r $CURRENT_ENV_DIR.zip $CURRENT_ENV_DIR
+    - zip -r $PCKG_FILE $CURRENT_ENV_DIR
     - echo "Creating Github realase..."
-    - RELEASE_ID=`curl -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\": \"$VERSION\"}" "https://api.github.com/repos/palette-software/insight-tester/releases"| jsawk "return this.id"`
-    - if [ $? -ne 0 ]; then echo "creating new release failed"; exit 10; fi
-    - echo $RELEASE_ID
-    - echo "Uploading Github release asset..."
-    - curl --progress-bar -H "Content-Type: application/octet-stream" -H "Authorization: token $GITHUB_TOKEN" --retry 3 --data-binary @$PCKG_FILE "https://uploads.github.com/repos/palette-software/insight-tester/releases/$RELEASE_ID/assets?name=$CURRENT_ENV_DIR.zip"
-    - if [ $? -ne 0 ]; then echo "uploading release asset failed"; exit 10; fi
+    - ${TRAVIS_BUILD_DIR}/release-to-github.sh
+    # - export RELEASE_ID=`curl -H "Authorization: token ${GITHUB_TOKEN}" -d "{\"tag_name\": $TAG_MESSAGE}" "https://api.github.com/repos/$OWNER/$PACKAGE/releases"| jsawk "return this.id"`
+    # - if [ $? -ne 0 ]; then echo "creating new release failed"; exit 10; fi
+    # - echo $RELEASE_ID
+    # - echo "Uploading Github release asset..."
+    # - curl --progress-bar -H "Content-Type: application/octet-stream" -H "Authorization: token $GITHUB_TOKEN" --retry 3 --data-binary @$PCKG_FILE "https://uploads.github.com/repos/$OWNER/$PACKAGE/releases/$RELEASE_ID/assets?name=$PCKG_FILE"
+    # - if [ $? -ne 0 ]; then echo "uploading release asset failed"; exit 10; fi
 
 notifications:
     email: false
