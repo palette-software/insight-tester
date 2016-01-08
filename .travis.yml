@@ -12,7 +12,8 @@ env:
     - GIMME_OS=windows GIMME_ARCH=amd64
 
 script:
-    - go build ./logfilewriter
+    - cd logfilewriter
+    - go build
 
 after_script:
     - ls -latr
