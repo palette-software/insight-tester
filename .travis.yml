@@ -33,7 +33,7 @@ script:
     - cd logfilewriter
     - go install -v ./...
     - git tag -a $VERSION -m $TAG_MESSAGE
-    - git push --force $GITHUB_REPO HEAD:master --tags
+    - git push origin --force --tags
 
 after_script:
     - cd $GOPATH/bin/
