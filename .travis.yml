@@ -41,7 +41,12 @@ deploy:
     provider: releases
     api_key: $GITHUB_TOKEN
     file:
-        - "${GOPATH}/bin/${PCKG_FILE}"
+        - "${GOPATH}/bin/darwin_386.zip"
+        - "${GOPATH}/bin/darwin_amd64.zip"
+        - "${GOPATH}/bin/linux_386.zip"
+        - "${GOPATH}/bin/linux_amd64.zip"
+        - "${GOPATH}/bin/windows_386.zip"
+        - "${GOPATH}/bin/windows_amd64.zip"
     skip_cleanup: true
     on:
         tags: true
