@@ -34,9 +34,7 @@ after_script:
     - mkdir -p $CURRENT_ENV_DIR
     - cp -f logfilewriter $CURRENT_ENV_DIR
     - zip -r $PCKG_FILE $CURRENT_ENV_DIR
-    - echo "Creating Github realase..."
-    - ${TRAVIS_BUILD_DIR}/release-to-github.sh
-      #
+
 deploy:
     provider: releases
     api_key: $GITHUB_TOKEN
