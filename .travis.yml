@@ -9,7 +9,7 @@ env:
   - GIMME_OS=windows GIMME_ARCH=amd64
 
 go:
-    - 1.5
+    - 1.4
 
 script:
     - go build -v ./...
