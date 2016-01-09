@@ -89,6 +89,9 @@ func main() {
     }
     wg.Wait()
     Trace.Println("Exiting...")
+
+    go StartPalMonAgent()
+
     os.Exit(0)
 }
 
