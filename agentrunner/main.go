@@ -59,7 +59,7 @@ func main() {
 
 	isIntSess, err := svc.IsAnInteractiveSession()
 	if err != nil {
-		log.Fatal.Fatalf("failed to determine if we are running in an interactive session: %v", err)
+		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
 	if !isIntSess {
 		runService(svcName, false)
@@ -91,7 +91,7 @@ func main() {
 		usage(fmt.Sprintf("invalid command %s", cmd))
 	}
 	if err != nil {
-		log.Fatal.Fatalf("failed to %s %s: %v", cmd, svcName, err)
+		log.Fatalf("failed to %s %s: %v", cmd, svcName, err)
 	}
 
 	log.Info.Print("Exiting")

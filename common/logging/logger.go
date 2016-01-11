@@ -5,29 +5,25 @@ import (
     "io"
 )
 
-type FatalLogger struct {
-	innerLogger *log.Logger
-}
-
-func (fl *FatalLogger) Fatal(v ...interface{}) {
-	fl.innerLogger.Fatal(v...)
-}
-
-func (fl *FatalLogger) Fatalf(format string, v ...interface{}) {
-	fl.innerLogger.Fatalf(format, v...)
-}
-
-func (fl *FatalLogger) Fatalln(v ...interface{}) {
-	fl.innerLogger.Fatalln(v...)
-}
-
 var (
-    Trace   *log.Logger
-    Info    *log.Logger
-    Warning *log.Logger
-    Error   *log.Logger
-	Fatal   FatalLogger
+	Trace   *log.Logger
+	Info    *log.Logger
+	Warning *log.Logger
+	Error   *log.Logger
+	fatal	*log.Logger
 )
+
+func Fatal(v ...interface{}) {
+	fatal.Fatal(v...)
+}
+
+func Fatalf(format string, v ...interface{}) {
+	fatal.Fatalf(format, v...)
+}
+
+func Fatalln(v ...interface{}) {
+	fatal.Fatalln(v...)
+}
 
 func InitLog(
         traceHandle		io.Writer,
@@ -35,10 +31,9 @@ func InitLog(
         warningHandle	io.Writer,
         errorHandle 	io.Writer,
 		fatalHandle  	io.Writer)  {
-    Trace 	= log.New(traceHandle,   "TRACE: ",   log.Ldate|log.Ltime|log.Lshortfile)
-    Info 	= log.New(infoHandle, 	 "INFO: ",    log.Ldate|log.Ltime|log.Lshortfile)
+    Trace 	= log.New(traceHandle,   "TRACE:   ", log.Ldate|log.Ltime|log.Lshortfile)
+    Info 	= log.New(infoHandle, 	 "INFO:    ", log.Ldate|log.Ltime|log.Lshortfile)
     Warning = log.New(warningHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-    Error 	= log.New(errorHandle, 	 "ERROR: ",   log.Ldate|log.Ltime|log.Lshortfile)
-	fatal  := log.New(fatalHandle,	 "FATAL: ",	  log.Ldate|log.Ltime|log.Lshortfile)
-	Fatal   = FatalLogger{fatal}
+    Error 	= log.New(errorHandle, 	 "ERROR:   ", log.Ldate|log.Ltime|log.Lshortfile)
+	fatal   = log.New(fatalHandle,	 "FATAL:   ", log.Ldate|log.Ltime|log.Lshortfile)
 }
