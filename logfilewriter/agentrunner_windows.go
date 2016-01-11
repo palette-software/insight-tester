@@ -6,8 +6,8 @@ type PalMonHandler struct {
 
 }
 
-func (pmh PalMonHandler) Execute(args []string, r <-chan ChangeRequest, s chan<- Status) (svcSpecificEC bool, exitCode uint32) {
-
+func (pmh PalMonHandler) Execute(args []string, r <-chan service.ChangeRequest, s chan<- service.Status) (svcSpecificEC bool, exitCode uint32) {
+	return true, 0
 }
 
 func StartPalMonAgent() {
