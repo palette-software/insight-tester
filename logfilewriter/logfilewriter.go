@@ -2,36 +2,19 @@ package main
 
 import (
     "os"
-    "io"
-    "log"
     "bufio"
     "sync"
     "io/ioutil"
 )
 
-var (
-    Trace   *log.Logger
-    Info    *log.Logger
-    Warning *log.Logger
-    Error   *log.Logger
-)
-
-func InitLog(
-            traceHandle io.Writer,
-            infoHandle io.Writer,
-            warningHandle io.Writer,
-            errorHandle io.Writer)  {
-    Trace = log.New(traceHandle, "TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
-    Info = log.New(infoHandle, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-    Warning = log.New(warningHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-    Error = log.New(errorHandle, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-}
+import log "github/insight-tester/common/logging"
 
 func readFile(fileName string, transfer chan string) (error) {
+    log.Info.Printf("Reading file: %v", fileName)
     file, err := os.Open(fileName)
     defer close(transfer)
     if err != nil {
-        Error.Printf("Error opening file: %v\n", err)
+        log.Error.Printf("Error opening file: %v\n", err)
         return err
     }
     defer file.Close()
@@ -51,7 +34,7 @@ func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error
     defer wg.Done()
     file, err := os.Create(fileName)
     if err != nil {
-        Error.Printf("Error opening file: %v", err)
+        log.Error.Printf("Error opening file: %v", err)
         return err
     }
     defer file.Close()
@@ -66,31 +49,29 @@ func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error
 
 
 func main() {
-    InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+    log.InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
     if len(os.Args) < 3 {
-        Error.Printf("Usage: %s source_path destination_path\n", os.Args[0])
+        log.Error.Printf("Usage: %s source_path destination_path\n", os.Args[0])
         os.Exit(1)
     }
 
     files, err := ioutil.ReadDir(os.Args[1])
     if err != nil {
-        Error.Println("Error while reading source directory: ", err)
+        log.Error.Println("Error while reading source directory: ", err)
     }
 
     var wg sync.WaitGroup
     for _, file := range files {
         if !file.IsDir() {
             wg.Add(1)
-            Info.Println("Processing file: ", file.Name())
+            log.Info.Println("Processing file: ", file.Name())
             transfer := make(chan string)
-            go writeFile(os.Args[2] + file.Name(), transfer, &wg)
-            go readFile(os.Args[1] + file.Name(), transfer)
+            go writeFile(os.Args[2] + "/" + file.Name(), transfer, &wg)
+            go readFile(os.Args[1] + "/" + file.Name(), transfer)
         }
     }
     wg.Wait()
-    Trace.Println("Exiting...")
-
-    go StartPalMonAgent()
+    log.Info.Println("Exiting...")
 
     os.Exit(0)
 }
