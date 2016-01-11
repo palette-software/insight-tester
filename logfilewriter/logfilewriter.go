@@ -49,7 +49,7 @@ func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error
 
 
 func main() {
-    log.InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+    log.InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, os.Stderr)
     if len(os.Args) < 3 {
         log.Error.Printf("Usage: %s source_path destination_path\n", os.Args[0])
         os.Exit(1)

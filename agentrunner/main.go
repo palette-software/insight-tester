@@ -53,14 +53,13 @@ func main() {
 		}
 	}()
 
-	log.InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	log.InitLog(ioutil.Discard, fo, fo, fo, fo)
 
-
-	log.Info("Starting up...")
+	log.Info.Print("Starting up...")
 
 	isIntSess, err := svc.IsAnInteractiveSession()
 	if err != nil {
-		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
+		log.Fatal.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
 	if !isIntSess {
 		runService(svcName, false)
@@ -92,10 +91,10 @@ func main() {
 		usage(fmt.Sprintf("invalid command %s", cmd))
 	}
 	if err != nil {
-		log.Fatalf("failed to %s %s: %v", cmd, svcName, err)
+		log.Fatal.Fatalf("failed to %s %s: %v", cmd, svcName, err)
 	}
 
-	log.Info("Exiting")
+	log.Info.Print("Exiting")
 
 	return
 }
