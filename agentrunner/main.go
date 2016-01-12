@@ -21,7 +21,7 @@ import (
 	"io/ioutil"
 
 	"golang.org/x/sys/windows/svc"
-	log "github/insight-tester/common/logging"
+	log "github.com/insight-tester/common/logging"
 )
 
 func usage(errmsg string) {

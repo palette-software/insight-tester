@@ -14,7 +14,7 @@ import (
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	log "github/insight-tester/common/logging"
+	log "github.com/insight-tester/common/logging"
 )
 
 func exePath() (string, error) {
