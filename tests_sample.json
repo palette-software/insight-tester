@@ -1,0 +1,18 @@
+[
+    {
+        "Description": "Should contain at least one row",
+        "Sql": "select count(*) from serverlogs",
+        "Result": {
+            "Operation": ">",
+            "Count": 0
+        }
+    },
+    {
+        "Description": "Should contain less than 100 rows",
+        "Sql": "select count(*) from serverlogs",
+        "Result": {
+            "Operation": "<",
+            "Count": 100
+        }
+    }
+]
