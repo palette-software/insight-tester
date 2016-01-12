@@ -18,13 +18,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"io/ioutil"
 
 	"golang.org/x/sys/windows/svc"
-)
-
-import (
 	log "github/insight-tester/common/logging"
-	"io/ioutil"
 )
 
 func usage(errmsg string) {
@@ -42,18 +39,23 @@ func main() {
 
 	// Initialize the log to write into file instead of stderr
 	// open output file
-	fo, err := os.Create("insight-tester.log")
+	logFile, err := os.OpenFile("log_agentrunner.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
+		fmt.Println("Failed to open log file! ", err)
 		panic(err)
 	}
+
 	// close fo on exit and check for its returned error
 	defer func() {
-		if err := fo.Close(); err != nil {
+		if err := logFile.Close(); err != nil {
+			fmt.Println("Failed to close log file! ", err)
 			panic(err)
 		}
 	}()
 
-	log.InitLog(ioutil.Discard, fo, fo, fo, fo)
+	// Set the levels to be ignored to ioutil.Discard
+	// Levels:  TRACE           INFO     WARNING  ERROR    FATAL
+	log.InitLog(ioutil.Discard, logFile, logFile, logFile, logFile)
 
 	log.Info.Print("Starting up...")
 

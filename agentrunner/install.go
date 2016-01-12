@@ -13,6 +13,8 @@ import (
 
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
+
+	log "github/insight-tester/common/logging"
 )
 
 func exePath() (string, error) {
@@ -46,6 +48,9 @@ func installService(name, desc string) error {
 	if err != nil {
 		return err
 	}
+
+	log.Info.Print("Installing service:", exepath)
+
 	m, err := mgr.Connect()
 	if err != nil {
 		return err
