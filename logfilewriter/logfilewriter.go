@@ -7,7 +7,7 @@ import (
     "io/ioutil"
 )
 
-import log "github.com/insight-tester/common/logging"
+import log "github.com/palette-software/insight-tester/common/logging"
 
 func readFile(fileName string, transfer chan string) (error) {
     log.Info.Printf("Reading file: %v", fileName)
