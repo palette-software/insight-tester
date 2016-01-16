@@ -29,7 +29,7 @@ func usage(errmsg string) {
 		"%s\n\n"+
 			"usage: %s <command>\n"+
 			"       where <command> is one of\n"+
-			"       install, remove, debug, start, stop, pause or continue.\n",
+			"       debug, start, stop, pause or continue.\n",
 		errmsg, os.Args[0])
 	os.Exit(2)
 }
@@ -77,10 +77,6 @@ func main() {
 	case "debug":
 		runService(svcName, true)
 		return
-	case "install":
-		err = installService(svcName, "my service")
-	case "remove":
-		err = removeService(svcName)
 	case "start":
 		err = startService(svcName)
 	case "stop":

@@ -12,6 +12,8 @@ import (
 
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
+
+	log "github.com/palette-software/insight-tester/common/logging"
 )
 
 func startService(name string) error {
@@ -25,6 +27,9 @@ func startService(name string) error {
 		return fmt.Errorf("could not access service: %v", err)
 	}
 	defer s.Close()
+
+	log.Info.Println("Starting service: ", name)
+
 	err = s.Start("is", "manual-started")
 	if err != nil {
 		return fmt.Errorf("could not start service: %v", err)
@@ -32,20 +37,36 @@ func startService(name string) error {
 	return nil
 }
 
-func controlService(name string, c svc.Cmd, to svc.State) error {
+func controlService(name string, cmd svc.Cmd, to svc.State) error {
 	m, err := mgr.Connect()
 	if err != nil {
 		return err
 	}
 	defer m.Disconnect()
+
+	var cmdString string;
+	switch cmd {
+	case svc.Stop:
+		cmdString = "Stopping"
+	case svc.Pause:
+		cmdString = "Pausing"
+	case svc.Continue:
+		cmdString = "Continuing"
+	case svc.Interrogate:
+		cmdString = "Interrogating"
+	case svc.Shutdown:
+		cmdString = "Shutting down"
+	}
+	log.Info.Println(cmdString + " service...")
+
 	s, err := m.OpenService(name)
 	if err != nil {
 		return fmt.Errorf("could not access service: %v", err)
 	}
 	defer s.Close()
-	status, err := s.Control(c)
+	status, err := s.Control(cmd)
 	if err != nil {
-		return fmt.Errorf("could not send control=%d: %v", c, err)
+		return fmt.Errorf("could not send control=%d: %v", cmd, err)
 	}
 	timeout := time.Now().Add(10 * time.Second)
 	for status.State != to {
