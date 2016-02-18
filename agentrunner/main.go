@@ -35,7 +35,7 @@ func usage(errmsg string) {
 }
 
 func main() {
-	const svcName = "PalMon"
+	const svcName = "PaletteInsightAgent"
 
 	// Initialize the log to write into file instead of stderr
 	// open output file
