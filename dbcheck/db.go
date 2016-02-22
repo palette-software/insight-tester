@@ -7,7 +7,7 @@ import (
 )
 
 func getConnectionString(config Database) (string) {
-    return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d", config.User, config.Password, config.Database, config.Host, config.Port)
+    return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable", config.User, config.Password, config.Database, config.Host, config.Port)
 }
 
 var DBConnection *sql.DB
