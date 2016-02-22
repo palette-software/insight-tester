@@ -14,5 +14,13 @@
       "Operation": "=",
       "Count": 12470
     }
+  },
+  {
+    "Description": "Should contain exactly 234 rows of filter states",
+    "Sql": "select count(*) from filter_state_audit",
+    "Result": {
+      "Operation": "=",
+      "Count": 234
+    }
   }
 ]
