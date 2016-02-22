@@ -1,0 +1,10 @@
+[
+  {
+    "Description": "Should contain exactly 4 rows of thread info",
+    "Sql": "select count(*) from threadinfo",
+    "Result": {
+      "Operation": "=",
+      "Count": 3
+    }
+  }
+]
