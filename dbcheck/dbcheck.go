@@ -34,9 +34,9 @@ func main() {
     exitCode := 0
 
     tests := getTests(os.Args[1])
-    config := getResultDBConfig(os.Args[2])
+    database := getResultDBConfig(os.Args[2])
     for _, test := range tests {
-        if !check(config, test) {
+        if !check(database, test) {
             exitCode = 1
         }
     }

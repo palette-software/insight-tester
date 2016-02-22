@@ -3,21 +3,20 @@ package main
 import (
     "database/sql"
     "fmt"
-    "strings"
     _ "github.com/lib/pq"
 )
 
 func getConnectionString(config Database) (string) {
-    return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d", config.User.Login, config.User.Password, config.Name, config.Server.Host, config.Server.Port)
+    return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d", config.User, config.Password, config.Database, config.Host, config.Port)
 }
 
 var DBConnection *sql.DB
 
-func getConnection(config Config) (*sql.DB) {
+func getConnection(database Database) (*sql.DB) {
     if DBConnection == nil {
-        connectionString := getConnectionString(config.Database)
+        connectionString := getConnectionString(database)
         var err error
-        DBConnection, err = sql.Open(strings.ToLower(config.Database.Type), connectionString)
+        DBConnection, err = sql.Open("postgres", connectionString)
         if err != nil {
             Error.Println("Error connecting to DB:", err)
             return nil
@@ -30,8 +29,8 @@ func closeDB() {
     DBConnection.Close()
 }
 
-func check(config Config, test Test) (bool) {
-    db := getConnection(config)
+func check(database Database, test Test) (bool) {
+    db := getConnection(database)
     if db == nil {
         return false
     }
