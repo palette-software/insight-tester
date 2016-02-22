@@ -3,36 +3,22 @@ package main
 import (
     "os"
     "io/ioutil"
-    "encoding/xml"
+    "gopkg.in/yaml.v2"
 )
 
-type Server struct {
-    Host string `xml:"host,attr"`
-    Port int `xml:"port,attr"`
-}
-
-type User struct {
-    Login string `xml:"login,attr"`
-    Password string `xml:"password,attr"`
-}
-
-type Table struct {
-    Name string `xml:"name,attr"`
-}
-
 type Database struct {
-    Name string `xml:"name,attr"`
-    Type string `xml:"type,attr"`
-    Server Server
-    User User
-    Table Table
+    Host string `yaml:"Host"`
+    Port int `yaml:"Port"`
+    Database string `yaml:"Database"`
+    User string `yaml:"User"`
+    Password string `yaml:"Password"`
 }
 
 type Config struct {
-    Database Database
+    Database Database `yaml:"Database"`
 }
 
-func getResultDBConfig(fileName string) (Config) {
+func getResultDBConfig(fileName string) (Database) {
     var v Config
     input, err := os.Open(fileName)
     if err != nil {
@@ -45,10 +31,10 @@ func getResultDBConfig(fileName string) (Config) {
         Error.Println("Error reading file: ", err)
         os.Exit(1)
     }
-     err = xml.Unmarshal(b, &v)
+     err = yaml.Unmarshal(b, &v)
      if err != nil {
-        Error.Println("Error parsing xml ", err)
+        Error.Println("Error parsing xml", err)
         os.Exit(1)
     }
-    return v
+    return v.Database
 }
