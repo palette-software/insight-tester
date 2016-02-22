@@ -6,5 +6,13 @@
       "Operation": "=",
       "Count": 3
     }
+  },
+  {
+    "Description": "Should contain exactly 12470 rows of serverlogs",
+    "Sql": "select count(*) from serverlogs",
+    "Result": {
+      "Operation": "=",
+      "Count": 12470
+    }
   }
 ]
