@@ -17,7 +17,7 @@ import log "github.com/palette-software/insight-tester/common/logging"
 func connect(token string) *github.Client {
     githubTransport := &oauth2.Transport{
         Source: oauth2.StaticTokenSource(
-            &oauth2.Token{AccessToken: "978c2597c901665d6ecb13860c816952ce19812e"},
+            &oauth2.Token{AccessToken: token},
         ),
     }
     defaultTransport := &http.Transport{}
