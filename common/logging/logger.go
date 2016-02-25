@@ -3,6 +3,8 @@ package logging
 import (
     "log"
     "io"
+    "io/ioutil"
+    "os"
 )
 
 var (
@@ -36,4 +38,8 @@ func InitLog(
     Warning = log.New(warningHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
     Error 	= log.New(errorHandle, 	 "ERROR:   ", log.Ldate|log.Ltime|log.Lshortfile)
 	fatal   = log.New(fatalHandle,	 "FATAL:   ", log.Ldate|log.Ltime|log.Lshortfile)
+}
+
+func Init() {
+    InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, os.Stderr)
 }
