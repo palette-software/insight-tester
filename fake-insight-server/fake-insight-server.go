@@ -49,7 +49,7 @@ func main() {
 	// create the upload endpoint
 	authenticatedUploadHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			okToEverything(w, r, "upload")
-		})
+	})
 
 	// create the maxid handler
 	maxIdHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
