@@ -7,7 +7,25 @@ import (
 	"flag"
 	"io/ioutil"
 	"os"
+	"encoding/json"
 )
+
+// The base structure for a SemVer like version
+type Version struct {
+	// The version according to SemVer
+	Major, Minor, Patch int
+}
+
+// Combines a version with an actual product and a file
+type UpdateVersion struct {
+	Version
+	// The name of the product
+	Product string
+	// The Md5 checksum of this update
+	Md5 string
+	// The url where this update can be downloaded from
+	Url string
+}
 
 // Just respond yes to every request
 func okToEverything(w http.ResponseWriter, r *http.Request, name string) {
@@ -56,9 +74,27 @@ func main() {
 	authenticatedUploadHandler := makeFakeHandler("upload")
 	maxIdHandler := makeFakeHandler("maxid")
 	updateCheckHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		latestUpdateResponse := fmt.Sprintf("product: \"agent\", version: \"v6.3.2\", major: 6, minor: 3, patch: 2, url: \"https://%s:%d/updates/products/agent/versions/v1.3.2\", md5: \"cool-md5-hash\"", bindAddress, bindPort)
-		log.Info.Println("Responding to updates: ", latestUpdateResponse)
-		http.Error(w, latestUpdateResponse, http.StatusOK)
+		w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Add("Pragma", "no-cache")
+		w.Header().Add("Expires", "0")
+
+		// Put a fake version in the response
+		fakeVersion := Version{6, 3, 2}
+		fakeUrl := fmt.Sprintf("https://%s:%d/updates/products/agent/versions/v1.3.2", bindAddress, bindPort)
+		fakeUpdateVersion := UpdateVersion{
+			Version:    fakeVersion,
+			Product:	"agent",
+			Md5:		"cool-md5-hash",
+			Url:		fakeUrl,
+		}
+
+		if err := json.NewEncoder(w).Encode(fakeUpdateVersion); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// And report that everything was OK
+		http.Error(w, "", http.StatusOK)
 	})
 
 	// Create the fake endpoints
