@@ -55,7 +55,11 @@ func main() {
 	// create the fake handlers
 	authenticatedUploadHandler := makeFakeHandler("upload")
 	maxIdHandler := makeFakeHandler("maxid")
-	updateCheckHandler := makeFakeHandler("updates")
+	updateCheckHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		latestUpdateResponse := fmt.Sprintf("product: \"agent\", version: \"v6.3.2\", major: 6, minor: 3, patch: 2, url: \"https://%s:%d/updates/products/agent/versions/v1.3.2\", md5: \"cool-md5-hash\"", bindAddress, bindPort)
+		log.Info.Println("Responding to updates: ", latestUpdateResponse)
+		http.Error(w, latestUpdateResponse, http.StatusOK)
+	})
 
 	// Create the fake endpoints
 	http.HandleFunc("/upload", authenticatedUploadHandler)
