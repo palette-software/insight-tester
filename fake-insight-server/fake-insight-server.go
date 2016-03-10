@@ -16,6 +16,12 @@ func okToEverything(w http.ResponseWriter, r *http.Request, name string) {
 	http.Error(w, "", http.StatusOK)
 }
 
+func makeFakeHandler(endpoint string) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		okToEverything(w, r, endpoint)
+	})
+}
+
 func main() {
 	// Initialize the log to write into file instead of stderr
 	// open output file
@@ -46,19 +52,15 @@ func main() {
 	flag.IntVar(&bindPort, "port", 9000, "The port the server is binding itself to")
 	flag.StringVar(&bindAddress, "bind_address", "localhost", "The address to bind to. Leave empty for default which is localhost .")
 
-	// create the upload endpoint
-	authenticatedUploadHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			okToEverything(w, r, "upload")
-	})
-
-	// create the maxid handler
-	maxIdHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		okToEverything(w, r, "maxid")
-	})
+	// create the fake handlers
+	authenticatedUploadHandler := makeFakeHandler("upload")
+	maxIdHandler := makeFakeHandler("maxid")
+	updateCheckHandler := makeFakeHandler("updatecheck")
 
 	// Create the fake endpoints
 	http.HandleFunc("/upload", authenticatedUploadHandler)
 	http.HandleFunc("/maxid", maxIdHandler)
+	http.HandleFunc("/updatecheck", updateCheckHandler)
 
 	bindAddressWithPort := fmt.Sprintf("%s:%v", bindAddress, bindPort)
 	log.Info.Println("[http] Webservice starting on ", bindAddressWithPort)
