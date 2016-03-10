@@ -55,12 +55,12 @@ func main() {
 	// create the fake handlers
 	authenticatedUploadHandler := makeFakeHandler("upload")
 	maxIdHandler := makeFakeHandler("maxid")
-	updateCheckHandler := makeFakeHandler("updatecheck")
+	updateCheckHandler := makeFakeHandler("updates")
 
 	// Create the fake endpoints
 	http.HandleFunc("/upload", authenticatedUploadHandler)
 	http.HandleFunc("/maxid", maxIdHandler)
-	http.HandleFunc("/updatecheck", updateCheckHandler)
+	http.HandleFunc("/updates/latest-version", updateCheckHandler)
 
 	bindAddressWithPort := fmt.Sprintf("%s:%v", bindAddress, bindPort)
 	log.Info.Println("[http] Webservice starting on ", bindAddressWithPort)
@@ -69,7 +69,6 @@ func main() {
 	//	err := http.ListenAndServeTLS(bindAddressWithPort, tlsCert, tlsKey, nil)
 	//	log.Fatal(err)
 	//} else {
-
 		err = http.ListenAndServe(bindAddressWithPort, nil)
 		log.Fatal(err)
 	//}
