@@ -27,6 +27,11 @@ type UpdateVersion struct {
 	Url string
 }
 
+type FakeCommand struct {
+	timeStamp string
+	command string
+}
+
 // Just respond yes to every request
 func okToEverything(w http.ResponseWriter, r *http.Request, name string) {
 	// signal that everything went ok
@@ -97,10 +102,23 @@ func main() {
 		http.Error(w, "", http.StatusOK)
 	})
 
+	commandHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Add("Pragma", "no-cache")
+		w.Header().Add("Expires", "0")
+
+		//now := time.Now().Format(time.RFC3339)
+		//fakeCommand := fmt.Sprintf("{\"ts\":\"%s\", \"command\":\"stop\"}", now)
+		fakeCommand := "{\"ts\":\"2016-03-21T19:47:37+01:00\", \"command\":\"stop\"}"
+
+		http.Error(w, fakeCommand, http.StatusOK)
+	})
+
 	// Create the fake endpoints
 	http.HandleFunc("/upload", authenticatedUploadHandler)
 	http.HandleFunc("/maxid", maxIdHandler)
 	http.HandleFunc("/updates/latest-version", updateCheckHandler)
+	http.HandleFunc("/commands/recent", commandHandler)
 
 	bindAddressWithPort := fmt.Sprintf("%s:%v", bindAddress, bindPort)
 	log.Info.Println("[http] Webservice starting on ", bindAddressWithPort)
