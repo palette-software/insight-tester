@@ -63,15 +63,20 @@ func main() {
         defer outFile.Close()
 
         // Download the asset
-        content, err := client.Repositories.DownloadReleaseAsset(owner, repo, *(asset.ID))
+        content, redirectURL, err := client.Repositories.DownloadReleaseAsset(owner, repo, *(asset.ID))
         if err != nil {
             log.Error.Println("Error while downlaoding asset: ", asset.Name, err)
             continue
         }
+		if redirectURL != "" {
+			// TODO: Follow redirects
+			log.Error.Println("Redirect required, but it is not supported yet! Redirect URL: ", redirectURL)
+			continue
+		}
         defer content.Close()
 
         // Write contents to file
-        _, err = io.Copy(outFile, content)  
+        _, err = io.Copy(outFile, content)
         if err != nil {
             log.Error.Println("Error while writing file: ", asset.Name, err)
         }
