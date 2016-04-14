@@ -28,7 +28,7 @@ func Fatalln(v ...interface{}) {
 }
 
 func InitLog(
-        debugHandle        io.Writer,
+        debugHandle     io.Writer,
         infoHandle		io.Writer,
         warningHandle	io.Writer,
         errorHandle 	io.Writer,
