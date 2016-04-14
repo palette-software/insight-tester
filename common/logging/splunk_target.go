@@ -1,102 +1,102 @@
 package logging
 
 import (
-    "bytes"
-    "crypto/tls"
-    "encoding/json"
-    "fmt"
-    "net/http"
-    "time"
-	"mime/multipart"
-	"os"
-	"path/filepath"
+	"bytes"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/palette-software/insight-server"
 
-    "github.com/zfjagann/golang-ring"
 	"github.com/kardianos/osext"
+	"github.com/zfjagann/golang-ring"
 )
 
 type SplunkTarget struct {
-    Protocol string
-	Owner string
-    Host string
-    Port string
-    Token string
-    Ring* ring.Ring
-    Ticker* time.Ticker
-    TickInterval int
-    Capacity int
+	Protocol     string
+	Owner        string
+	Host         string
+	Port         string
+	Token        string
+	Ring         *ring.Ring
+	Ticker       *time.Ticker
+	TickInterval int
+	Capacity     int
 }
 
 type Message struct {
-    Event string  `json:"event"`
+	Event string `json:"event"`
 }
 
-func formatSplunkMessage(p string) ([] byte) {
-    m := Message{
-        Event: p,
-    }
-    jsonObject, err := json.Marshal(m)
+func formatSplunkMessage(p string) []byte {
+	m := Message{
+		Event: p,
+	}
+	jsonObject, err := json.Marshal(m)
 	if err != nil {
 		return nil
 	}
-    return jsonObject
+	return jsonObject
 }
 
-func (t SplunkTarget) Write(p [] byte) (n int, err error) {
-    // This conversion is needed as otherwise we overwrite the enqueued items.
-    message := fmt.Sprintf("[OW:%s]  %s", t.Owner, p)
-    t.Ring.Enqueue(message)
-    return n, nil
+func (t SplunkTarget) Write(p []byte) (n int, err error) {
+	// This conversion is needed as otherwise we overwrite the enqueued items.
+	message := fmt.Sprintf("[OW:%s]  %s", t.Owner, p)
+	t.Ring.Enqueue(message)
+	return n, nil
 }
 
 func (t SplunkTarget) Start() {
-    t.Ring.SetCapacity(t.Capacity);
-    t.Ticker = time.NewTicker(time.Duration(t.TickInterval) * time.Millisecond)
-    go func(t* SplunkTarget) {
-        for range t.Ticker.C {
-            t.SendLogs()
-        }
-    }(&t)
+	t.Ring.SetCapacity(t.Capacity)
+	t.Ticker = time.NewTicker(time.Duration(t.TickInterval) * time.Millisecond)
+	go func(t *SplunkTarget) {
+		for range t.Ticker.C {
+			t.SendLogs()
+		}
+	}(&t)
 }
 
 func (t SplunkTarget) SendLogs() {
-    var b bytes.Buffer
-    for {
-        next := t.Ring.Dequeue()
-        if next == nil {
-            break;
-        }
-        line := fmt.Sprintf("%s", next)
+	var b bytes.Buffer
+	for {
+		next := t.Ring.Dequeue()
+		if next == nil {
+			break
+		}
+		line := fmt.Sprintf("%s", next)
 		formattedMessage := formatSplunkMessage(line)
 		if formattedMessage != nil {
-        	b.Write(formatSplunkMessage(line))
+			b.Write(formatSplunkMessage(line))
 		}
-    }
-    // Return if there's no new records
-    if b.Len() == 0 {
-        return
-    }
+	}
+	// Return if there's no new records
+	if b.Len() == 0 {
+		return
+	}
 
-    // Send the records to Splunk
-    endpoint := fmt.Sprintf("%s://%s:%s/services/collector", t.Protocol, t.Host, t.Port)
-    request, err := http.NewRequest("POST", endpoint, &b)
-    if err != nil {
-        fmt.Println("Error:", err)
-        return
-    }
+	// Send the records to Splunk
+	endpoint := fmt.Sprintf("%s://%s:%s/services/collector", t.Protocol, t.Host, t.Port)
+	request, err := http.NewRequest("POST", endpoint, &b)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-    request.Header.Set("Content-Type", "application/json")
-    request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
-    tr := &http.Transport{
-        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-    }
-    client := &http.Client{Transport: tr}
-    client.Do(request)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	client.Do(request)
 }
 
 func NewSplunkTarget(Host, Token string) *SplunkTarget {
@@ -107,18 +107,18 @@ func NewSplunkTarget(Host, Token string) *SplunkTarget {
 		return nil
 	}
 
-    st := SplunkTarget{
-		Owner: ownerName,
-        Host: Host,
-        Token: Token,
-        Protocol: "https",
-        Port: "443",
-        Ring: &ring.Ring{},
-        TickInterval: 300,
-        Capacity: 65000,
-    }
-    st.Start()
-    return &st
+	st := SplunkTarget{
+		Owner:        ownerName,
+		Host:         Host,
+		Token:        Token,
+		Protocol:     "https",
+		Port:         "443",
+		Ring:         &ring.Ring{},
+		TickInterval: 300,
+		Capacity:     65000,
+	}
+	st.Start()
+	return &st
 }
 
 func getOwner() (string, error) {

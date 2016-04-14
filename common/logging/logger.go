@@ -1,10 +1,10 @@
 package logging
 
 import (
-    "log"
-    "io"
-    "io/ioutil"
-    "os"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 var (
@@ -12,7 +12,7 @@ var (
 	Info    *log.Logger
 	Warning *log.Logger
 	Error   *log.Logger
-	fatal	*log.Logger
+	fatal   *log.Logger
 )
 
 func Fatal(v ...interface{}) {
@@ -28,18 +28,18 @@ func Fatalln(v ...interface{}) {
 }
 
 func InitLog(
-        debugHandle     io.Writer,
-        infoHandle		io.Writer,
-        warningHandle	io.Writer,
-        errorHandle 	io.Writer,
-		fatalHandle  	io.Writer)  {
-    Debug   = log.New(debugHandle,	 "DEBUG:   ", log.Ldate|log.Ltime|log.Lshortfile)
-    Info 	= log.New(infoHandle, 	 "INFO:    ", log.Ldate|log.Ltime|log.Lshortfile)
-    Warning = log.New(warningHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-    Error 	= log.New(errorHandle, 	 "ERROR:   ", log.Ldate|log.Ltime|log.Lshortfile)
-	fatal   = log.New(fatalHandle,	 "FATAL:   ", log.Ldate|log.Ltime|log.Lshortfile)
+		debugHandle 	io.Writer,
+		infoHandle 		io.Writer,
+		warningHandle 	io.Writer,
+		errorHandle 	io.Writer,
+		fatalHandle 	io.Writer) {
+	Debug 	= log.New(debugHandle, 	 "DEBUG:   ", log.Ldate|log.Ltime|log.Lshortfile)
+	Info 	= log.New(infoHandle, 	 "INFO:    ", log.Ldate|log.Ltime|log.Lshortfile)
+	Warning = log.New(warningHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
+	Error 	= log.New(errorHandle, 	 "ERROR:   ", log.Ldate|log.Ltime|log.Lshortfile)
+	fatal 	= log.New(fatalHandle, 	 "FATAL:   ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func Init() {
-    InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, os.Stderr)
+	InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, os.Stderr)
 }
