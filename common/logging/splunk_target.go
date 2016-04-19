@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/palette-software/insight-server"
@@ -30,6 +31,7 @@ type SplunkTarget struct {
 	Ticker       *time.Ticker
 	TickInterval int
 	Capacity     int
+	ringMutex    sync.Mutex
 }
 
 type Message struct {
@@ -47,14 +49,20 @@ func formatSplunkMessage(p string) []byte {
 	return jsonObject
 }
 
-func (t SplunkTarget) Write(p []byte) (n int, err error) {
+func (t *SplunkTarget) Write(p []byte) (n int, err error) {
+	// Remove the newline characters from the end of the stream, if there are any, as Splunk does not need them.
+	p = bytes.TrimSuffix(p, []byte("\n"))
+
 	// This conversion is needed as otherwise we overwrite the enqueued items.
 	message := fmt.Sprintf("[OW:%s]  %s", t.Owner, p)
+	fmt.Println("Enqueued message: ", message)
+	t.ringMutex.Lock()
+	defer t.ringMutex.Unlock()
 	t.Ring.Enqueue(message)
 	return n, nil
 }
 
-func (t SplunkTarget) Start() {
+func (t *SplunkTarget) Start() {
 	t.Ring.SetCapacity(t.Capacity)
 	t.Ticker = time.NewTicker(time.Duration(t.TickInterval) * time.Millisecond)
 	go func(t *SplunkTarget) {
@@ -64,8 +72,9 @@ func (t SplunkTarget) Start() {
 	}(&t)
 }
 
-func (t SplunkTarget) SendLogs() {
-	var b bytes.Buffer
+func (t *SplunkTarget) DequeueLines() (b bytes.Buffer) {
+	t.ringMutex.Lock()
+	defer t.ringMutex.Unlock()
 	for {
 		next := t.Ring.Dequeue()
 		if next == nil {
@@ -74,9 +83,15 @@ func (t SplunkTarget) SendLogs() {
 		line := fmt.Sprintf("%s", next)
 		formattedMessage := formatSplunkMessage(line)
 		if formattedMessage != nil {
-			b.Write(formatSplunkMessage(line))
+			b.Write(formattedMessage)
 		}
 	}
+
+	return b
+}
+
+func (t SplunkTarget) SendLogs() {
+	b := t.DequeueLines()
 	// Return if there's no new records
 	if b.Len() == 0 {
 		return
