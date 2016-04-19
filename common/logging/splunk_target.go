@@ -69,7 +69,7 @@ func (t *SplunkTarget) Start() {
 		for range t.Ticker.C {
 			t.SendLogs()
 		}
-	}(&t)
+	}(t)
 }
 
 func (t *SplunkTarget) DequeueLines() (b bytes.Buffer) {
