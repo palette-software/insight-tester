@@ -57,7 +57,7 @@ func main() {
 	// Levels:  TRACE           INFO     WARNING  ERROR    FATAL
 	log.InitLog(ioutil.Discard, logFile, logFile, logFile, logFile)
 
-	log.Info.Println("Starting up...")
+	log.Info("Starting up...")
 
 	isIntSess, err := svc.IsAnInteractiveSession()
 	if err != nil {
@@ -92,7 +92,7 @@ func main() {
 		log.Fatalf("failed to %s %s: %v", cmd, svcName, err)
 	}
 
-	log.Info.Print("Exiting")
+	log.Info("Exiting")
 
 	return
 }

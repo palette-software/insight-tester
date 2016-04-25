@@ -10,11 +10,11 @@ import (
 import log "github.com/palette-software/insight-tester/common/logging"
 
 func readFile(fileName string, transfer chan string) (error) {
-    log.Info.Printf("Reading file: %v", fileName)
+    log.Infof("Reading file: %v", fileName)
     file, err := os.Open(fileName)
     defer close(transfer)
     if err != nil {
-        log.Error.Printf("Error opening file: %v\n", err)
+        log.Errorf("Error opening file: %v\n", err)
         return err
     }
     defer file.Close()
@@ -34,7 +34,7 @@ func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error
     defer wg.Done()
     file, err := os.Create(fileName)
     if err != nil {
-        log.Error.Printf("Error opening file: %v", err)
+        log.Errorf("Error opening file: %v", err)
         return err
     }
     defer file.Close()
@@ -49,29 +49,30 @@ func writeFile(fileName string, transfer chan string, wg* sync.WaitGroup) (error
 
 
 func main() {
-    log.InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, os.Stderr)
+	log.Init()
+	log.AddTarget(os.Stdout, log.DebugLevel)
     if len(os.Args) < 3 {
-        log.Error.Printf("Usage: %s source_path destination_path\n", os.Args[0])
+        log.Errorf("Usage: %s source_path destination_path\n", os.Args[0])
         os.Exit(1)
     }
 
     files, err := ioutil.ReadDir(os.Args[1])
     if err != nil {
-        log.Error.Println("Error while reading source directory: ", err)
+        log.Error("Error while reading source directory: ", err)
     }
 
     var wg sync.WaitGroup
     for _, file := range files {
         if !file.IsDir() {
             wg.Add(1)
-            log.Info.Println("Processing file: ", file.Name())
+            log.Info("Processing file: ", file.Name())
             transfer := make(chan string)
             go writeFile(os.Args[2] + "/" + file.Name(), transfer, &wg)
             go readFile(os.Args[1] + "/" + file.Name(), transfer)
         }
     }
     wg.Wait()
-    log.Info.Println("Exiting...")
+    log.Info("Exiting...")
 
     os.Exit(0)
 }
