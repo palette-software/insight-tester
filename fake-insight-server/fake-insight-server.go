@@ -5,7 +5,6 @@ import (
 	log "github.com/palette-software/insight-tester/common/logging"
 	"fmt"
 	"flag"
-	"io/ioutil"
 	"os"
 	"encoding/json"
 )
@@ -108,6 +107,6 @@ func main() {
 	//	log.Fatal(err)
 	//} else {
 		err = http.ListenAndServe(bindAddressWithPort, nil)
-		log.FatalLevel(err)
+		log.Fatal(err)
 	//}
 }

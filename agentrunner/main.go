@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"io/ioutil"
 
 	"golang.org/x/sys/windows/svc"
 	log "github.com/palette-software/insight-tester/common/logging"
@@ -37,6 +36,8 @@ func usage(errmsg string) {
 func main() {
 	const svcName = "PaletteInsightAgent"
 
+	log.Init()
+
 	// Initialize the log to write into file instead of stderr
 	// open output file
 	logFile, err := os.OpenFile("log_agentrunner.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
@@ -52,10 +53,7 @@ func main() {
 			panic(err)
 		}
 	}()
-
-	// Set the levels to be ignored to ioutil.Discard
-	// Levels:  TRACE           INFO     WARNING  ERROR    FATAL
-	log.InitLog(ioutil.Discard, logFile, logFile, logFile, logFile)
+	log.AddTarget(logFile, log.InfoLevel)
 
 	log.Info("Starting up...")
 
