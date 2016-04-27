@@ -28,7 +28,7 @@ func startService(name string) error {
 	}
 	defer s.Close()
 
-	log.Info.Println("Starting service: ", name)
+	log.Info("Starting service: ", name)
 
 	err = s.Start("is", "manual-started")
 	if err != nil {
@@ -57,7 +57,7 @@ func controlService(name string, cmd svc.Cmd, to svc.State) error {
 	case svc.Shutdown:
 		cmdString = "Shutting down"
 	}
-	log.Info.Println(cmdString + " service...")
+	log.Info(cmdString + " service...")
 
 	s, err := m.OpenService(name)
 	if err != nil {

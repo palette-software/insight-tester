@@ -29,9 +29,9 @@ func connect(token string) *github.Client {
 }
 
 func main() {
-    log.Init()
+	log.AddTarget(os.Stdout, log.InfoLevel)
     if len(os.Args) < 4 {
-        log.Error.Println("Usage: ", os.Args[0], "<owner> <repository> <access token>")
+        log.Error("Usage: ", os.Args[0], "<owner> <repository> <access token>")
         os.Exit(1)
     }
     owner := os.Args[1]
@@ -43,7 +43,7 @@ func main() {
     // Get the latest release
     latest, _, err := client.Repositories.GetLatestRelease(owner, repo)
     if err != nil {
-        log.Error.Println("Error while getting latest release: ", err)
+        log.Error("Error while getting latest release: ", err)
         os.Exit(1)
     }
 
@@ -57,23 +57,28 @@ func main() {
         // Create file on file system
         outFile, err := os.Create(*(asset.Name))
         if err != nil {
-            log.Error.Println("Error creating file: ", asset.Name, err)
+            log.Error("Error creating file: ", asset.Name, err)
             continue
         }
         defer outFile.Close()
 
         // Download the asset
-        content, err := client.Repositories.DownloadReleaseAsset(owner, repo, *(asset.ID))
+        content, redirectURL, err := client.Repositories.DownloadReleaseAsset(owner, repo, *(asset.ID))
         if err != nil {
-            log.Error.Println("Error while downlaoding asset: ", asset.Name, err)
+            log.Error("Error while downlaoding asset: ", asset.Name, err)
             continue
         }
+		if redirectURL != "" {
+			// TODO: Follow redirects
+			log.Error("Redirect required, but it is not supported yet! Redirect URL: ", redirectURL)
+			continue
+		}
         defer content.Close()
 
         // Write contents to file
-        _, err = io.Copy(outFile, content)  
+        _, err = io.Copy(outFile, content)
         if err != nil {
-            log.Error.Println("Error while writing file: ", asset.Name, err)
+            log.Error("Error while writing file: ", asset.Name, err)
         }
     }
 }

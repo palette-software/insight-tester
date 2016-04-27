@@ -5,7 +5,6 @@ import (
 	log "github.com/palette-software/insight-tester/common/logging"
 	"fmt"
 	"flag"
-	"io/ioutil"
 	"os"
 	"encoding/json"
 )
@@ -35,7 +34,7 @@ type FakeCommand struct {
 // Just respond yes to every request
 func okToEverything(w http.ResponseWriter, r *http.Request, name string) {
 	// signal that everything went ok
-	log.Info.Printf("Responding OK to %s request.", name)
+	log.Infof("Responding OK to %s request.", name)
 	http.Error(w, "", http.StatusOK)
 }
 
@@ -61,12 +60,9 @@ func main() {
 			panic(err)
 		}
 	}()
+	log.AddTarget(logFile, log.InfoLevel)
 
-	// Set the levels to be ignored to ioutil.Discard
-	// Levels:  TRACE           INFO     WARNING  ERROR    FATAL
-	log.InitLog(ioutil.Discard, logFile, logFile, logFile, logFile)
-
-	log.Info.Println("Starting up the fake insight server...")
+	log.Info("Starting up the fake insight server...")
 
 	// Variables for holding the server address and port
 	var bindAddress string
@@ -121,7 +117,7 @@ func main() {
 	http.HandleFunc("/commands/recent", commandHandler)
 
 	bindAddressWithPort := fmt.Sprintf("%s:%v", bindAddress, bindPort)
-	log.Info.Println("[http] Webservice starting on ", bindAddressWithPort)
+	log.Info("[http] Webservice starting on ", bindAddressWithPort)
 
 	//if useTls {
 	//	err := http.ListenAndServeTLS(bindAddressWithPort, tlsCert, tlsKey, nil)

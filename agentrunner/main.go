@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"io/ioutil"
 
 	"golang.org/x/sys/windows/svc"
 	log "github.com/palette-software/insight-tester/common/logging"
@@ -52,12 +51,9 @@ func main() {
 			panic(err)
 		}
 	}()
+	log.AddTarget(logFile, log.InfoLevel)
 
-	// Set the levels to be ignored to ioutil.Discard
-	// Levels:  TRACE           INFO     WARNING  ERROR    FATAL
-	log.InitLog(ioutil.Discard, logFile, logFile, logFile, logFile)
-
-	log.Info.Println("Starting up...")
+	log.Info("Starting up...")
 
 	isIntSess, err := svc.IsAnInteractiveSession()
 	if err != nil {
@@ -92,7 +88,7 @@ func main() {
 		log.Fatalf("failed to %s %s: %v", cmd, svcName, err)
 	}
 
-	log.Info.Print("Exiting")
+	log.Info("Exiting")
 
 	return
 }
