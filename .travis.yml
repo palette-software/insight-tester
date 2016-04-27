@@ -28,6 +28,7 @@ before_install:
 script:
     - cd logfilewriter
     - go install -v ./...
+    - go test -v ./...
 
 after_success:
     - cd $GOPATH/bin/
