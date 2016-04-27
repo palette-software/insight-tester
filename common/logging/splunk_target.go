@@ -24,6 +24,7 @@ import (
 type SplunkTarget struct {
 	Protocol     string
 	Owner        string
+	MachineName  string
 	Host         string
 	Port         string
 	Token        string
@@ -53,9 +54,9 @@ func (t *SplunkTarget) Write(p []byte) (n int, err error) {
 	// Remove the newline characters from the end of the stream, if there are any, as Splunk does not need them.
 	p = bytes.TrimSuffix(p, []byte("\n"))
 
-	// This conversion is needed as otherwise we overwrite the enqueued items.
-	message := fmt.Sprintf("[OW:%s]  %s", t.Owner, p)
-	fmt.Println("Enqueued message: ", message)
+	// This conversion is needed as otherwise we overwrite the enqueued items. And we need to show the owner and
+	// the machine name in the log lines.
+	message := fmt.Sprintf("[OW:%s] [MN:%s]  %s", t.Owner, t.MachineName, p)
 	t.ringMutex.Lock()
 	defer t.ringMutex.Unlock()
 	t.Ring.Enqueue(message)
@@ -90,9 +91,9 @@ func (t *SplunkTarget) DequeueLines() (b bytes.Buffer) {
 	return b
 }
 
-func (t SplunkTarget) SendLogs() {
+func (t *SplunkTarget) SendLogs() {
 	b := t.DequeueLines()
-	// Return if there's no new records
+	// Return if there are no new records
 	if b.Len() == 0 {
 		return
 	}
@@ -111,15 +112,36 @@ func (t SplunkTarget) SendLogs() {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-	client.Do(request)
+	_, err = client.Do(request)
+	if err != nil {
+		fmt.Println("Failed to send request! Exception message: ", err)
+	}
 }
 
-func NewSplunkTarget(Host, Token string) *SplunkTarget {
+func (t *SplunkTarget) Close() error {
+	// FIXME: Wait 3 seconds, so that Splunk logger has some time to upload the logs
+	tickUpdate := time.Tick(3 * time.Second)
+
+	select {
+	case <-tickUpdate:
+		// Time is up. Do not wait any longer.
+		return fmt.Errorf("Not all messages are sent to Splunk, time is up. Force close.")
+	}
+	return nil
+}
+
+func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
 	ownerName, err := getOwner()
 	if err != nil {
 		// Without an owner name there is no point in sending logs to Splunk, otherwise we will
 		// not be able to identify the source of the log files in Splunk.
-		return nil
+		return nil, err
+	}
+
+	machineName, err := os.Hostname()
+	if err != nil {
+		// Go on anyway. It's better to have something, than nothing.
+		machineName = "UNKNOWN_MACHINE"
 	}
 
 	st := SplunkTarget{
@@ -131,9 +153,10 @@ func NewSplunkTarget(Host, Token string) *SplunkTarget {
 		Ring:         &ring.Ring{},
 		TickInterval: 300,
 		Capacity:     65000,
+		MachineName:  machineName,
 	}
 	st.Start()
-	return &st
+	return &st, nil
 }
 
 func getOwner() (string, error) {
@@ -193,9 +216,6 @@ func queryOwnerOfLicense(licenseFile string) (string, error) {
 		return "", err
 	}
 	resp.Body.Close()
-	fmt.Println("Status code:", resp.StatusCode)
-	fmt.Println("Header:", resp.Header)
-	fmt.Println("Body:", body)
 
 	// Decode the JSON in the response
 	var licenseCheck insight_server.LicenseCheckResponse
@@ -211,8 +231,6 @@ func queryOwnerOfLicense(licenseFile string) (string, error) {
 		return "", err
 	}
 
-	// FIXME: Remove println-s!!
-	fmt.Println("Owner is", licenseCheck.OwnerName)
 	return licenseCheck.OwnerName, nil
 }
 
