@@ -140,7 +140,8 @@ func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
 
 	machineName, err := os.Hostname()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get machine name! Error: %v", err)
+		// Go on anyway. It's better to have something, than nothing.
+		machineName = "UNKNOWN_MACHINE"
 	}
 
 	st := SplunkTarget{
