@@ -130,7 +130,7 @@ func (t *SplunkTarget) Close() error {
 	return nil
 }
 
-func NewSplunkTarget(Host string) (*SplunkTarget, error) {
+func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
 	ownerName, err := getOwner()
 	if err != nil {
 		// Without an owner name there is no point in sending logs to Splunk, otherwise we will
@@ -146,7 +146,7 @@ func NewSplunkTarget(Host string) (*SplunkTarget, error) {
 	st := SplunkTarget{
 		Owner:        ownerName,
 		Host:         Host,
-		Token:        "705293B1-BDBA-486B-92D2-6BA3A542F6D7",
+		Token:        Token,
 		Protocol:     "https",
 		Port:         "443",
 		Ring:         &ring.Ring{},
