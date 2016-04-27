@@ -3,7 +3,9 @@ package logging
 import (
 	"testing"
 	"os"
+
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 )
 
 // Fake writer, something that we can set expectations on.
@@ -17,17 +19,23 @@ func (m *MockWriter) Write(p []byte) (n int, err error) {
 	return args.Int(0), args.Error(1)
 }
 
-func Test_UninitializedLogging(*testing.T) {
-	// Logger shouldn't crash, even if it is not initialized
-	Info("Don't worry")
+// Test suite so that logger can start from zero in all tests
+type LoggerTestSuite struct {
+	suite.Suite
 }
 
-func Test_InitialsedLogging(*testing.T) {
-	Init()
-	Info("Be happy")
+// Revert logger to "zero" state, before all tests
+func (suite *LoggerTestSuite) SetupTest() {
+	loggers = nil
 }
 
-func Test_EmptyLogging(*testing.T) {
+// In order for 'go test' to run this suite, we need to create
+// a normal test function and pass our suite to suite.Run
+func Test_LoggerTestSuite(t *testing.T) {
+	suite.Run(t, new(LoggerTestSuite))
+}
+
+func (suite *LoggerTestSuite) Test_EmptyLogging() {
 	Debug("These")
 	Info("lines")
 	Warning("should")
@@ -35,24 +43,24 @@ func Test_EmptyLogging(*testing.T) {
 	Fatal("nowhere")
 }
 
-func Test_UseTargetWhenNotInitialised(*testing.T) {
-	AddTarget(os.Stdout, DebugLevel)
-	Debug("True Survivor")
-}
-
-func Test_UseTargetWhenInitialised(*testing.T) {
-	Init()
+func (suite *LoggerTestSuite) Test_SingleTarget() {
 	AddTarget(os.Stdout, DebugLevel)
 	Info("Smooth operator")
 }
 
-func Test_MultipleTargetsWhenNotInitialised(*testing.T) {
+func (suite *LoggerTestSuite) Test_MultipleTargetsButTriggerOnlyOne() {
 	AddTarget(os.Stdout, DebugLevel)
 	AddTarget(os.Stderr, ErrorLevel)
-	Info("Bear Grylls")
+	Info("One ring above all")
 }
 
-func Test_CallOnlyRelevantTargets(t *testing.T) {
+func (suite *LoggerTestSuite) Test_MultipleTargetsButTriggerBoth() {
+	AddTarget(os.Stdout, DebugLevel)
+	AddTarget(os.Stderr, ErrorLevel)
+	Error("Get together and feel alright")
+}
+
+func (suite *LoggerTestSuite) Test_CallOnlyRelevantTargets() {
 	mockTargetA := new(MockWriter)
 	mockTargetB := new(MockWriter)
 	mockTargetC := new(MockWriter)
@@ -61,21 +69,19 @@ func Test_CallOnlyRelevantTargets(t *testing.T) {
 	mockTargetA.On("Write", mock.Anything).Return(33, nil)
 	mockTargetC.On("Write", mock.Anything).Return(33, nil)
 
-	Init()
 	AddTarget(mockTargetA, DebugLevel)
 	AddTarget(mockTargetB, ErrorLevel)
 	AddTarget(mockTargetC, InfoLevel)
 
 	Info("Useless, but true information.")
 
-	mockTargetA.AssertExpectations(t)
-	mockTargetB.AssertNotCalled(t, "Write", mock.Anything)
-	mockTargetC.AssertCalled(t, "Write", mock.Anything)
+	mockTargetA.AssertExpectations(suite.T())
+	mockTargetB.AssertNotCalled(suite.T(), "Write", mock.Anything)
+	mockTargetC.AssertCalled(suite.T(), "Write", mock.Anything)
 }
 
-func Test_NullTargetsAreNotWelcome(t *testing.T) {
+func (suite *LoggerTestSuite) Test_NullTargetsAreNotWelcome() {
 	// Shouldn't crash on passing nil as target
-	Init()
 	AddTarget(nil, DebugLevel)
 	Debug("You can't stop me!")
 }

@@ -3,9 +3,8 @@ package logging
 import (
 	"io"
 	"log"
+	"fmt"
 )
-
-type LogLevel int
 
 const (
 	DebugLevel LogLevel = iota
@@ -15,122 +14,129 @@ const (
 	FatalLevel
 )
 
-var (
-	debugTargets   	[]*log.Logger
-	infoTargets    	[]*log.Logger
-	warningTargets 	[]*log.Logger
-	errorTargets   	[]*log.Logger
-	fatalTargets   	[]*log.Logger
+type LogLevel int
+type LogTargets []*log.Logger
 
-)
-func Init() {
-	// Let's init them with the size of 5, that should be enough.
-	// But append will resize these arrays, if necessary.
-	debugTargets   = make([]*log.Logger, 0, 5)
-	infoTargets    = make([]*log.Logger, 0, 5)
-	warningTargets = make([]*log.Logger, 0, 5)
-	errorTargets   = make([]*log.Logger, 0, 5)
-	fatalTargets   = make([]*log.Logger, 0, 5)
-}
+var loggers map[LogLevel]LogTargets
 
-func AddTarget(target io.Writer, minLevel LogLevel) {
+func AddTarget(target io.Writer, minLevel LogLevel) error {
 	if target == nil {
 		// Do nothing.
-		return
+		return fmt.Errorf("Nil cannot be added as a log target!")
 	}
 
-	if minLevel <= DebugLevel {
-		debugTargets = append(debugTargets,
-			log.New(target, "DEBUG:   ", log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
+	for level := DebugLevel; level <= FatalLevel; level++ {
+		// Add the target to the selected levels
+		if minLevel <= level {
+			var levelPrefix string
+			switch level {
+			case DebugLevel:
+				levelPrefix = "DEBUG:   "
+			case InfoLevel:
+				levelPrefix = "INFO:    "
+			case WarningLevel:
+				levelPrefix = "WARNING: "
+			case ErrorLevel:
+				levelPrefix = "ERROR:   "
+			case FatalLevel:
+				levelPrefix = "FATAL:   "
+			default:
+				return fmt.Errorf("Invalid level specified while adding log target! Requested log level: %v", minLevel)
+			}
+
+			// Lazy init of loggers map
+			if loggers == nil {
+				loggers = make(map[LogLevel]LogTargets)
+			}
+
+			loggers[level] = append(loggers[level],
+				log.New(target, levelPrefix, log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
+		}
 	}
-	if minLevel <= InfoLevel {
-		infoTargets = append(infoTargets,
-			log.New(target, "INFO:    ", log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
-	}
-	if minLevel <= WarningLevel {
-		warningTargets = append(warningTargets,
-			log.New(target, "WARNING: ", log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
-	}
-	if minLevel <= ErrorLevel {
-		errorTargets = append(errorTargets,
-			log.New(target, "ERROR:   ", log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
-	}
-	if minLevel <= FatalLevel {
-		fatalTargets = append(fatalTargets,
-			log.New(target, "FATAL:   ", log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
-	}
+
+	return nil
 }
 
 //// Debug
 func Debug(v ...interface{}) {
-	printAll(debugTargets, v...)
+	printAll(DebugLevel, v...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	printAllf(debugTargets, format, v...)
+	printAllf(DebugLevel, format, v...)
 }
 
 //// Info
 func Info(v ...interface{}) {
-	printAll(infoTargets, v...)
+	printAll(InfoLevel, v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	printAllf(infoTargets, format, v...)
+	printAllf(InfoLevel, format, v...)
 }
 
 //// Warning
 func Warning(v ...interface{}) {
-	printAll(warningTargets, v...)
+	printAll(WarningLevel, v...)
 }
 
 func Warningf(format string, v ...interface{}) {
-	printAllf(warningTargets, format, v...)
+	printAllf(WarningLevel, format, v...)
 }
 
 //// Error
 func Error(v ...interface{}) {
-	printAll(errorTargets, v...)
+	printAll(ErrorLevel, v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	printAllf(errorTargets, format, v...)
+	printAllf(ErrorLevel, format, v...)
 }
 
 //// Fatal
 func Fatal(v ...interface{}) {
-	for _, target := range fatalTargets {
-		if target == nil {
-			continue
-		}
-		target.Fatal(v...)
-	}
+	printAll(FatalLevel, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	for _, target := range fatalTargets {
-		if target == nil {
-			continue
-		}
-		target.Fatalf(format, v...)
-	}
+	printAllf(FatalLevel, format, v...)
 }
 
 // Private implementations
-func printAll(targets []*log.Logger, v ...interface{}) {
+func printAll(level LogLevel, v ...interface{}) {
+	if loggers == nil {
+		// Loggers can be nil, if no logger has been added yet.
+		return
+	}
+
+	targets := loggers[level]
 	for _, target := range targets {
 		if target == nil {
 			continue
 		}
-		target.Print(v...)
+		if level == FatalLevel {
+			target.Fatal(v...)
+		} else {
+			target.Print(v...)
+		}
 	}
 }
 
-func printAllf(targets []*log.Logger, format string, v ...interface{}) {
+func printAllf(level LogLevel, format string, v ...interface{}) {
+	if loggers == nil {
+		// Loggers can be nil, if no logger has been added yet.
+		return
+	}
+
+	targets := loggers[level]
 	for _, target := range targets {
 		if target == nil {
 			continue
 		}
-		target.Printf(format, v...)
+		if level == FatalLevel {
+			target.Fatalf(format, v...)
+		} else {
+			target.Printf(format, v...)
+		}
 	}
 }

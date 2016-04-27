@@ -40,7 +40,6 @@ func makeFakeHandler(endpoint string) http.HandlerFunc {
 }
 
 func main() {
-	log.Init()
 	// Initialize the log to write into file instead of stderr
 	// open output file
 	logFile, err := os.OpenFile("fake_insight_server.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
