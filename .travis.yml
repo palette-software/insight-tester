@@ -27,7 +27,7 @@ before_install:
 
 script:
     - go install -v ./...
-    - go test -v ./...
+    - ./travis_run_go_test.sh
 
 after_success:
     - cd $GOPATH/bin/
