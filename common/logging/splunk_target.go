@@ -5,19 +5,11 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/palette-software/insight-server"
-
-	"github.com/kardianos/osext"
 	"github.com/zfjagann/golang-ring"
 )
 
@@ -130,12 +122,11 @@ func (t *SplunkTarget) Close() error {
 	return nil
 }
 
-func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
-	ownerName, err := getOwner()
-	if err != nil {
+func NewSplunkTarget(Host, Token, Owner string) (*SplunkTarget, error) {
+	if Owner != "" {
 		// Without an owner name there is no point in sending logs to Splunk, otherwise we will
 		// not be able to identify the source of the log files in Splunk.
-		return nil, err
+		return nil, fmt.Errorf("Empty owner name is not allowed for Splunk target!")
 	}
 
 	machineName, err := os.Hostname()
@@ -145,7 +136,7 @@ func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
 	}
 
 	st := SplunkTarget{
-		Owner:        ownerName,
+		Owner:        Owner,
 		Host:         Host,
 		Token:        Token,
 		Protocol:     "https",
@@ -157,111 +148,4 @@ func NewSplunkTarget(Host, Token string) (*SplunkTarget, error) {
 	}
 	st.Start()
 	return &st, nil
-}
-
-func getOwner() (string, error) {
-	execFolder, err := osext.ExecutableFolder()
-	if err != nil {
-		fmt.Println("Failed to get executable folder for Splunk target: ", err)
-		return "", err
-	}
-
-	// Check for license
-	files, err := ioutil.ReadDir(execFolder)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println("Failed to read exec dir for license files: ", err)
-		return "", err
-	}
-
-	ownerName := ""
-	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".license") {
-			ownerName, err = queryOwnerOfLicense(filepath.Join(execFolder, file.Name()))
-			if err != nil {
-				continue
-			}
-			break
-		}
-	}
-
-	if ownerName == "" {
-		fmt.Println("No valid license file found!")
-		return "", err
-	}
-
-	return ownerName, nil
-}
-
-func queryOwnerOfLicense(licenseFile string) (string, error) {
-	request, err := newfileUploadRequest("http://localhost:9000/license-check", "file", licenseFile)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println("Fatal error while creating new file upload request: ", err)
-		return "", err
-	}
-	client := &http.Client{}
-	resp, err := client.Do(request)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Printf("Client do request failed! Request: %v. Error message: %v", request, err)
-		return "", err
-	}
-
-	body := &bytes.Buffer{}
-	_, err = body.ReadFrom(resp.Body)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println("Fatal error while reading from response body: ", err)
-		return "", err
-	}
-	resp.Body.Close()
-
-	// Decode the JSON in the response
-	var licenseCheck insight_server.LicenseCheckResponse
-	if err := json.NewDecoder(body).Decode(&licenseCheck); err != nil {
-		//log.Error.Printf("Error while deserializing license check response body! Error message: %v", err)
-		fmt.Printf("Error while deserializing license check response body! Error message: %v", err)
-		return "", err
-	}
-
-	if !licenseCheck.Valid {
-		err = fmt.Errorf("License: %v is invalid! Although owner name is %v", licenseFile, licenseCheck.OwnerName)
-		fmt.Println(err)
-		return "", err
-	}
-
-	return licenseCheck.OwnerName, nil
-}
-
-// Creates a new file upload http request with multipart file
-func newfileUploadRequest(uri string, paramName, path string) (*http.Request, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, filepath.Base(path))
-	if err != nil {
-		return nil, err
-	}
-	_, err = io.Copy(part, file)
-
-	err = writer.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", uri, body)
-	if err != nil {
-		fmt.Println("Failed to create new request! Error message: %v", err)
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-
-	return req, nil
 }
