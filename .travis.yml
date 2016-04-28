@@ -27,6 +27,7 @@ before_install:
 
 script:
     - go install -v ./...
+    - chmod ugo+x travis_run_go_test.sh
     - ./travis_run_go_test.sh
 
 after_success:
