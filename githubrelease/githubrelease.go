@@ -70,8 +70,8 @@ func main() {
         }
 
 		if redirectURL != "" {
-			// We are going to overwrite the contents acquired before, so we need to close it first
-			content.Close()
+			// We are going to overwrite the contents acquired before, but as per the documentation the
+			// content must be nil. So we are free to overwrite it
 			response, err := http.Get(redirectURL)
 			if err != nil {
 				log.Error("Failed to download redirected content from URL:", redirectURL)
