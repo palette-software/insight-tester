@@ -72,7 +72,12 @@ func main() {
 		if redirectURL != "" {
 			// We are going to overwrite the contents acquired before, so we need to close it first
 			content.Close()
-			content, err = http.Get(redirectURL)
+			response, err := http.Get(redirectURL)
+			if err != nil {
+				log.Error("Failed to download redirected content from URL:", redirectURL)
+				continue
+			}
+			content = response.Body
 		}
 
 		// Do not move this deferred call before the redirect URL check, since content might be
