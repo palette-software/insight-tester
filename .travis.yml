@@ -35,7 +35,7 @@ after_success:
     - export CURRENT_ENV_DIR=${GIMME_OS}_${GIMME_ARCH}
     - export PCKG_FILE=${CURRENT_ENV_DIR}.zip
     - mkdir -p $CURRENT_ENV_DIR
-    - cp -f logfilewriter $CURRENT_ENV_DIR
+    - cp -f $GOPATH/bin/* $CURRENT_ENV_DIR/
     - zip -r $PCKG_FILE $CURRENT_ENV_DIR
 
 deploy:
