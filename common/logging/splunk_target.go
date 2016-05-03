@@ -123,7 +123,7 @@ func (t *SplunkTarget) Close() error {
 }
 
 func NewSplunkTarget(Host, Token, Owner string) (*SplunkTarget, error) {
-	if Owner != "" {
+	if Owner == "" {
 		// Without an owner name there is no point in sending logs to Splunk, otherwise we will
 		// not be able to identify the source of the log files in Splunk.
 		return nil, fmt.Errorf("Empty owner name is not allowed for Splunk target!")
