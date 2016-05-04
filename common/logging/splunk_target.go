@@ -2,7 +2,6 @@ package logging
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -100,10 +99,7 @@ func (t *SplunkTarget) SendLogs() {
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
+	var client http.Client
 	_, err = client.Do(request)
 	if err != nil {
 		fmt.Println("Failed to send request! Exception message: ", err)
