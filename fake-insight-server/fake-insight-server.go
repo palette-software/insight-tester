@@ -104,8 +104,8 @@ func main() {
 		w.Header().Add("Expires", "0")
 
 		//now := time.Now().Format(time.RFC3339)
-		//fakeCommand := fmt.Sprintf("{\"ts\":\"%s\", \"command\":\"stop\"}", now)
-		fakeCommand := "{\"ts\":\"2016-03-21T19:47:37+01:00\", \"command\":\"stop\"}"
+		//fakeCommand := fmt.Sprintf(`{"ts":"%s", "command":"stop"}`, now)
+		fakeCommand := `{"ts":"2016-03-21T19:47:37+01:00", "command":"stop"}`
 
 		http.Error(w, fakeCommand, http.StatusOK)
 	})
