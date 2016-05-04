@@ -68,12 +68,21 @@ func main() {
             log.Error("Error while downlaoding asset: ", asset.Name, err)
             continue
         }
+
 		if redirectURL != "" {
-			// TODO: Follow redirects
-			log.Error("Redirect required, but it is not supported yet! Redirect URL: ", redirectURL)
-			continue
+			// We are going to overwrite the contents acquired before, but as per the documentation the
+			// content must be nil. So we are free to overwrite it
+			response, err := http.Get(redirectURL)
+			if err != nil {
+				log.Error("Failed to download redirected content from URL:", redirectURL)
+				continue
+			}
+			content = response.Body
 		}
-        defer content.Close()
+
+		// Do not move this deferred call before the redirect URL check, since content might be
+		// changed in there!
+		defer content.Close()
 
         // Write contents to file
         _, err = io.Copy(outFile, content)
