@@ -100,10 +100,12 @@ func (t *SplunkTarget) SendLogs() {
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
 	var client http.Client
-	_, err = client.Do(request)
+    response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Failed to send request! Exception message: ", err)
+        return
 	}
+    response.Body.Close()
 }
 
 func (t *SplunkTarget) Close() error {
