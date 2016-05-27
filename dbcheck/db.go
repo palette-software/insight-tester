@@ -3,8 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/Sirupsen/logrus"
 	_ "github.com/lib/pq"
+	log "github.com/palette-software/insight-tester/common/logging"
+	"time"
 )
 
 func getConnectionString(config Database) string {
@@ -19,9 +20,7 @@ func getConnection(database Database) *sql.DB {
 		var err error
 		DBConnection, err = sql.Open("postgres", connectionString)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("Error connecting to DB:")
+			log.Errorf("Error connecting to db: %v", err)
 			return nil
 		}
 	}
@@ -37,30 +36,24 @@ func check(database Database, test Test) bool {
 	if db == nil {
 		return false
 	}
+	start := time.Now()
 	rows, err := db.Query(test.Sql)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("Error getting rows:")
+		log.Errorf("Error getting rows: %v", err)
 		return false
 	}
 	defer rows.Close()
+	rowCount := 0
 	for rows.Next() {
+		rowCount++
 		var count int
-		rows.Scan(&count)
+		var hostName string
+		rows.Scan(&count, &hostName)
 		if !checkTest(count, test) {
-			logrus.WithFields(logrus.Fields{
-				"description": test.Description,
-				"expected":    fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count),
-				"actual":      count,
-			}).Error("Failed DB sanity check.")
+			log.Errorf("Failed DB check: %v - host: %v - expected: %s - actual: %v - elapsed: %v", test.Description, hostName, fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count), count, time.Since(start))
 			return false
 		}
-		logrus.WithFields(logrus.Fields{
-			"description": test.Description,
-			"expected":    fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count),
-			"actual":      count,
-		}).Info("Successful test")
 	}
+	log.Infof("Successful test: %v - rows: %v - elapsed: %v", test.Description, rowCount, time.Since(start))
 	return true
 }

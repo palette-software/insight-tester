@@ -1,9 +1,9 @@
 package logging
 
 import (
+	"fmt"
 	"io"
 	"log"
-	"fmt"
 )
 
 const (

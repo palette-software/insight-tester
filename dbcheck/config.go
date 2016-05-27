@@ -1,6 +1,7 @@
 package main
 
 import (
+	log "github.com/palette-software/insight-tester/common/logging"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -22,18 +23,18 @@ func getResultDBConfig(fileName string) Database {
 	var v Config
 	input, err := os.Open(fileName)
 	if err != nil {
-		Error.Println("Error opening file: ", err)
+		log.Error("Error opening file: ", err)
 		os.Exit(1)
 	}
 	defer input.Close()
 	b, err := ioutil.ReadAll(input)
 	if err != nil {
-		Error.Println("Error reading file: ", err)
+		log.Error("Error reading file: ", err)
 		os.Exit(1)
 	}
 	err = yaml.Unmarshal(b, &v)
 	if err != nil {
-		Error.Println("Error parsing yml", err)
+		log.Error("Error parsing yml", err)
 		os.Exit(1)
 	}
 	if v.Database.Host == "" ||
@@ -41,7 +42,7 @@ func getResultDBConfig(fileName string) Database {
 		v.Database.User == "" ||
 		v.Database.Database == "" ||
 		v.Database.Password == "" {
-		Error.Println("Config file does not contain database information.")
+		log.Error("Config file does not contain database information.")
 		os.Exit(1)
 	}
 	return v.Database
