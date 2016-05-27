@@ -1,7 +1,7 @@
 package main
 
 import (
-	log "github.com/palette-software/insight-tester/common/logging"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -19,31 +19,27 @@ type Config struct {
 	Database Database `yaml:"Database"`
 }
 
-func getResultDBConfig(fileName string) Database {
+func getResultDBConfig(fileName string) (*Database, error) {
 	var v Config
 	input, err := os.Open(fileName)
 	if err != nil {
-		log.Error("Error opening file: ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	defer input.Close()
 	b, err := ioutil.ReadAll(input)
 	if err != nil {
-		log.Error("Error reading file: ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	err = yaml.Unmarshal(b, &v)
 	if err != nil {
-		log.Error("Error parsing yml", err)
-		os.Exit(1)
+		return nil, err
 	}
 	if v.Database.Host == "" ||
 		v.Database.Port == 0 ||
 		v.Database.User == "" ||
 		v.Database.Database == "" ||
 		v.Database.Password == "" {
-		log.Error("Config file does not contain database information.")
-		os.Exit(1)
+		return nil, fmt.Errorf("Config file does not contain database information.")
 	}
-	return v.Database
+	return &v.Database, nil
 }

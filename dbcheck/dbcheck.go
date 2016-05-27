@@ -30,16 +30,25 @@ func mainWithExitCode() int {
 	if err == nil {
 		defer splunkLogger.Close()
 		log.AddTarget(splunkLogger, log.DebugLevel)
+		log.AddTarget(os.Stdout, log.DebugLevel)
 	} else {
 		fmt.Printf("Faield to create Splunk target.")
 		log.Error("Failed to create Splunk target for watchdog! Error: ", err)
 	}
 	exitCode := 0
 
-	tests := getTests(os.Args[1])
-	database := getResultDBConfig(os.Args[2])
+	tests, err := getTests(os.Args[1])
+	if err != nil {
+		log.Errorf("Error while loading test definitions: %v", err)
+		return 1
+	}
+	database, err := getResultDBConfig(os.Args[2])
+	if err != nil {
+		log.Errorf("Error while loading config: %v", err)
+		return 1
+	}
 	for _, test := range tests {
-		if !check(database, test) {
+		if !check(*database, test) {
 			exitCode = 1
 		}
 	}

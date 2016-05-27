@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/palette-software/insight-tester/common/logging"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -50,23 +49,20 @@ func checkTest(count int, test Test) bool {
 	return ret
 }
 
-func getTests(fileName string) []Test {
+func getTests(fileName string) ([]Test, error) {
 	var v []Test
 	input, err := os.Open(fileName)
 	if err != nil {
-		log.Error("Error opening file: ", err)
-		os.Exit(1)
+		return v, err
 	}
 	defer input.Close()
 	b, err := ioutil.ReadAll(input)
 	if err != nil {
-		log.Error("Error reading file: ", err)
-		os.Exit(1)
+		return v, err
 	}
 	err = json.Unmarshal(b, &v)
 	if err != nil {
-		log.Error("Error parsing json ", err)
-		os.Exit(1)
+		return v, err
 	}
-	return v
+	return v, nil
 }
