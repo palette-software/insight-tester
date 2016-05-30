@@ -1,0 +1,10 @@
+﻿Databases:
+    Hosts:
+        - staging-insight.palette-software.net
+        - isi-insight.palette-software.net
+        - isi-qa-insight.palette-software.net
+    Params:
+        Port: 5432
+        User: palette
+        Database: palette
+        Password: palette123
