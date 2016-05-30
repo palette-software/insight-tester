@@ -5,6 +5,6 @@
         - isi-qa-insight.palette-software.net
     Params:
         Port: 5432
-        User: palette
+        User: palette_etl_user
         Database: palette
         Password: palette123
