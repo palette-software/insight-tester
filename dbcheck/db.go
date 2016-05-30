@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-func getConnectionString(config Database) string {
-	return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable", config.User, config.Password, config.Database, config.Host, config.Port)
+func getConnectionString(host string, config ConstParams) string {
+	return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable", config.User, config.Password, config.Database, host, config.Port)
 }
 
 var DBConnection *sql.DB
 
-func getConnection(database Database) *sql.DB {
+func getConnection(host string, dbParams ConstParams) *sql.DB {
 	if DBConnection == nil {
-		connectionString := getConnectionString(database)
+		connectionString := getConnectionString(host, dbParams)
 		var err error
 		DBConnection, err = sql.Open("postgres", connectionString)
 		if err != nil {
@@ -31,8 +31,8 @@ func closeDB() {
 	DBConnection.Close()
 }
 
-func check(database Database, test Test) bool {
-	db := getConnection(database)
+func check(host string, dbParams ConstParams, test Test) bool {
+	db := getConnection(host, dbParams)
 	if db == nil {
 		return false
 	}
@@ -50,10 +50,11 @@ func check(database Database, test Test) bool {
 		var hostName string
 		rows.Scan(&count, &hostName)
 		if !checkTest(count, test) {
-			log.Errorf("Failed DB check: %v - host: %v - expected: %s - actual: %v - elapsed: %v", test.Description, hostName, fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count), count, time.Since(start))
+			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
+			log.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]", host, hostName, test.Description, expected, count, time.Since(start))
 			return false
 		}
 	}
-	log.Infof("Successful test: %v - rows: %v - elapsed: %v", test.Description, rowCount, time.Since(start))
+	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", host, test.Description, rowCount, time.Since(start))
 	return true
 }

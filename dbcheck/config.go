@@ -7,19 +7,23 @@ import (
 	"os"
 )
 
-type Database struct {
-	Host     string `yaml:"Host"`
+type ConstParams struct {
 	Port     int    `yaml:"Port"`
 	Database string `yaml:"Database"`
 	User     string `yaml:"User"`
 	Password string `yaml:"Password"`
 }
 
-type Config struct {
-	Database Database `yaml:"Database"`
+type Databases struct {
+	Hosts  []string    `yaml:"Hosts"`
+	Params ConstParams `yaml:"Params"`
 }
 
-func getResultDBConfig(fileName string) (*Database, error) {
+type Config struct {
+	Databases Databases `yaml:"Databases"`
+}
+
+func getResultDBConfig(fileName string) (*Databases, error) {
 	var v Config
 	input, err := os.Open(fileName)
 	if err != nil {
@@ -34,12 +38,12 @@ func getResultDBConfig(fileName string) (*Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	if v.Database.Host == "" ||
-		v.Database.Port == 0 ||
-		v.Database.User == "" ||
-		v.Database.Database == "" ||
-		v.Database.Password == "" {
+	if len(v.Databases.Hosts) < 1 ||
+		v.Databases.Params.Port == 0 ||
+		v.Databases.Params.User == "" ||
+		v.Databases.Params.Database == "" ||
+		v.Databases.Params.Password == "" {
 		return nil, fmt.Errorf("Config file does not contain database information.")
 	}
-	return &v.Database, nil
+	return &v.Databases, nil
 }

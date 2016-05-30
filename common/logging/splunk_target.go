@@ -38,6 +38,12 @@ func formatSplunkMessage(p string) []byte {
 	if err != nil {
 		return nil
 	}
+	// As json.Marshal is so nice to replace <, > and & for us we need to replace them back
+	// as splunk API is a little more intelligent than a browser and can handle these in json
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u003c"), []byte("<"), -1)
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u003e"), []byte(">"), -1)
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u0026"), []byte("&"), -1)
+
 	return jsonObject
 }
 

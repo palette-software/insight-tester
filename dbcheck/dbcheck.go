@@ -47,9 +47,12 @@ func mainWithExitCode() int {
 		log.Errorf("Error while loading config: %v", err)
 		return 1
 	}
-	for _, test := range tests {
-		if !check(*database, test) {
-			exitCode = 1
+
+	for _, host := range database.Hosts {
+		for _, test := range tests {
+			if !check(host, database.Params, test) {
+				exitCode = 1
+			}
 		}
 	}
 	closeDB()
