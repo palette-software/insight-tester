@@ -1,22 +1,22 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 )
 
 type Result struct {
-	Operation string
-	Count     int
+	Operation string `yaml:"Operation"`
+	Count     int    `yaml:"Count"`
 }
 
 type Test struct {
-	Description string
-	Sql         string
-	Result      Result
+	Description string `yaml:"Description"`
+	Sql         string `yaml:"Sql"`
+	Result      Result `yaml:"Result"`
 }
 
 var green = color.New(color.FgGreen).SprintFunc()
@@ -59,7 +59,7 @@ func getTests(fileName string) ([]Test, error) {
 	if err != nil {
 		return v, err
 	}
-	err = json.Unmarshal(b, &v)
+	err = yaml.Unmarshal(b, &v)
 	if err != nil {
 		return v, err
 	}
