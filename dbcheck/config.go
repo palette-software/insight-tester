@@ -45,7 +45,7 @@ func parseConfig(fileName string) (*Config, error) {
 		v.Databases.Params.User == "" ||
 		v.Databases.Params.Database == "" ||
 		v.Databases.Params.Password == "" {
-		return nil, fmt.Errorf("Config file does not contain database information.")
+		return nil, fmt.Errorf("Config file does not contain database information. %v", v.Databases)
 	}
 	return &v, nil
 }

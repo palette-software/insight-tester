@@ -15,7 +15,7 @@ func main() {
 func mainWithExitCode() int {
 	if len(os.Args) < 3 {
 		fmt.Printf("Usage: %s test_config_json palmon_config_xml\n", os.Args[0])
-		os.Exit(1)
+		return 1
 	}
 	http.DefaultTransport = &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
