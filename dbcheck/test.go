@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"os"
-	"strconv"
 )
 
 type Result struct {
@@ -19,18 +19,17 @@ type Test struct {
 	Result      Result
 }
 
-func color(this_color int, input string) string {
-	return "\033[" + strconv.Itoa(this_color) + "m" + input + "\033[0m"
-}
+var green = color.New(color.FgGreen).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
 
 func print(description string, result bool) {
 	output := description + ": "
 	if result {
 		output += "OK"
-		output = color(32, output)
+		output = green(output)
 	} else {
 		output += "Failed!!!!"
-		output = color(31, output)
+		output = red(output)
 	}
 	fmt.Println(output)
 }
