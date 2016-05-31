@@ -44,19 +44,19 @@ func (suite *LoggerTestSuite) Test_EmptyLogging() {
 }
 
 func (suite *LoggerTestSuite) Test_SingleTarget() {
-	AddTarget(os.Stdout, DebugLevel)
+	AddTarget(os.Stdout, LevelDebug)
 	Info("Smooth operator")
 }
 
 func (suite *LoggerTestSuite) Test_MultipleTargetsButTriggerOnlyOne() {
-	AddTarget(os.Stdout, DebugLevel)
-	AddTarget(os.Stderr, ErrorLevel)
+	AddTarget(os.Stdout, LevelDebug)
+	AddTarget(os.Stderr, LevelError)
 	Info("One ring above all")
 }
 
 func (suite *LoggerTestSuite) Test_MultipleTargetsButTriggerBoth() {
-	AddTarget(os.Stdout, DebugLevel)
-	AddTarget(os.Stderr, ErrorLevel)
+	AddTarget(os.Stdout, LevelDebug)
+	AddTarget(os.Stderr, LevelError)
 	Error("Get together and feel alright")
 }
 
@@ -69,9 +69,9 @@ func (suite *LoggerTestSuite) Test_CallOnlyRelevantTargets() {
 	mockTargetA.On("Write", mock.Anything).Return(33, nil)
 	mockTargetC.On("Write", mock.Anything).Return(33, nil)
 
-	AddTarget(mockTargetA, DebugLevel)
-	AddTarget(mockTargetB, ErrorLevel)
-	AddTarget(mockTargetC, InfoLevel)
+	AddTarget(mockTargetA, LevelDebug)
+	AddTarget(mockTargetB, LevelError)
+	AddTarget(mockTargetC, LevelInfo)
 
 	Info("Useless, but true information.")
 
@@ -82,6 +82,6 @@ func (suite *LoggerTestSuite) Test_CallOnlyRelevantTargets() {
 
 func (suite *LoggerTestSuite) Test_NullTargetsAreNotWelcome() {
 	// Shouldn't crash on passing nil as target
-	AddTarget(nil, DebugLevel)
+	AddTarget(nil, LevelDebug)
 	Debug("You can't stop me!")
 }
