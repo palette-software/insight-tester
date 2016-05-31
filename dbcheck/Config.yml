@@ -8,3 +8,6 @@
         User: palette_etl_user
         Database: palette
         Password: palette123
+SplunkServerAddress: "splunk-insight.palette-software.net"
+# SplunkToken: "TOKEN"
+

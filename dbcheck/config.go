@@ -20,10 +20,12 @@ type Databases struct {
 }
 
 type Config struct {
-	Databases Databases `yaml:"Databases"`
+	Databases           Databases `yaml:"Databases"`
+	SplunkServerAddress string    `yaml:"SplunkServerAddress"`
+	SplunkToken         string    `yaml:"SplunkToken"`
 }
 
-func getResultDBConfig(fileName string) (*Databases, error) {
+func parseConfig(fileName string) (*Config, error) {
 	var v Config
 	input, err := os.Open(fileName)
 	if err != nil {
@@ -45,5 +47,5 @@ func getResultDBConfig(fileName string) (*Databases, error) {
 		v.Databases.Params.Password == "" {
 		return nil, fmt.Errorf("Config file does not contain database information.")
 	}
-	return &v.Databases, nil
+	return &v, nil
 }
