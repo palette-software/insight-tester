@@ -34,8 +34,8 @@ func mainWithExitCode() int {
 	log.Infof("Created with error: %v", err)
 	if err == nil {
 		defer splunkLogger.Close()
-		log.AddTarget(splunkLogger, log.DebugLevel)
-		log.AddTarget(os.Stdout, log.DebugLevel)
+		log.AddTarget(splunkLogger, log.LevelDebug)
+		log.AddTarget(os.Stdout, log.LevelDebug)
 	} else {
 		fmt.Printf("Faield to create Splunk target.")
 		log.Error("Failed to create Splunk target for watchdog! Error: ", err)

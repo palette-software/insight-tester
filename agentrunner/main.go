@@ -51,7 +51,7 @@ func main() {
 			panic(err)
 		}
 	}()
-	log.AddTarget(logFile, log.InfoLevel)
+	log.AddTarget(logFile, log.LevelInfo)
 
 	log.Info("Starting up...")
 
