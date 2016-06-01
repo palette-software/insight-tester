@@ -1,0 +1,13 @@
+﻿Databases:
+    Hosts:
+        - staging-insight.palette-software.net
+        - isi-insight.palette-software.net
+        - isi-qa-insight.palette-software.net
+    Params:
+        Port: 5432
+        User: palette_etl_user
+        Database: palette
+        Password: palette123
+SplunkServerAddress: "splunk-insight.palette-software.net"
+SplunkToken: "F59DC3B4-AAB9-4330-ACED-682E1681B507"
+

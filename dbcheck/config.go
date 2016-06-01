@@ -1,40 +1,51 @@
 package main
 
 import (
-    "os"
-    "io/ioutil"
-    "gopkg.in/yaml.v2"
+	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
 )
 
-type Database struct {
-    Host string `yaml:"Host"`
-    Port int `yaml:"Port"`
-    Database string `yaml:"Database"`
-    User string `yaml:"User"`
-    Password string `yaml:"Password"`
+type ConstParams struct {
+	Port     int    `yaml:"Port"`
+	Database string `yaml:"Database"`
+	User     string `yaml:"User"`
+	Password string `yaml:"Password"`
+}
+
+type Databases struct {
+	Hosts  []string    `yaml:"Hosts"`
+	Params ConstParams `yaml:"Params"`
 }
 
 type Config struct {
-    Database Database `yaml:"Database"`
+	Databases           Databases `yaml:"Databases"`
+	SplunkServerAddress string    `yaml:"SplunkServerAddress"`
+	SplunkToken         string    `yaml:"SplunkToken"`
 }
 
-func getResultDBConfig(fileName string) (Database) {
-    var v Config
-    input, err := os.Open(fileName)
-    if err != nil {
-        Error.Println("Error opening file: ", err)
-        os.Exit(1)
-    }
-    defer input.Close()
-    b, err := ioutil.ReadAll(input)
-    if err != nil {
-        Error.Println("Error reading file: ", err)
-        os.Exit(1)
-    }
-     err = yaml.Unmarshal(b, &v)
-     if err != nil {
-        Error.Println("Error parsing xml", err)
-        os.Exit(1)
-    }
-    return v.Database
+func parseConfig(fileName string) (*Config, error) {
+	var v Config
+	input, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer input.Close()
+	b, err := ioutil.ReadAll(input)
+	if err != nil {
+		return nil, err
+	}
+	err = yaml.Unmarshal(b, &v)
+	if err != nil {
+		return nil, err
+	}
+	if len(v.Databases.Hosts) < 1 ||
+		v.Databases.Params.Port == 0 ||
+		v.Databases.Params.User == "" ||
+		v.Databases.Params.Database == "" ||
+		v.Databases.Params.Password == "" {
+		return nil, fmt.Errorf("Config file does not contain database information. %v", v.Databases)
+	}
+	return &v, nil
 }

@@ -38,6 +38,12 @@ func formatSplunkMessage(p string) []byte {
 	if err != nil {
 		return nil
 	}
+	// As json.Marshal is so nice to replace <, > and & for us we need to replace them back
+	// as splunk API is a little more intelligent than a browser and can handle these in json
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u003c"), []byte("<"), -1)
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u003e"), []byte(">"), -1)
+	jsonObject = bytes.Replace(jsonObject, []byte("\\u0026"), []byte("&"), -1)
+
 	return jsonObject
 }
 
@@ -93,30 +99,23 @@ func (t *SplunkTarget) SendLogs() {
 	endpoint := fmt.Sprintf("%s://%s:%s/services/collector", t.Protocol, t.Host, t.Port)
 	request, err := http.NewRequest("POST", endpoint, &b)
 	if err != nil {
-		fmt.Println("Error:", err)
 		return
 	}
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
 	var client http.Client
-    response, err := client.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Failed to send request! Exception message: ", err)
-        return
+		return
 	}
-    response.Body.Close()
+	response.Body.Close()
 }
 
 func (t *SplunkTarget) Close() error {
-	// FIXME: Wait 3 seconds, so that Splunk logger has some time to upload the logs
-	tickUpdate := time.Tick(3 * time.Second)
-
-	select {
-	case <-tickUpdate:
-		// Time is up. Do not wait any longer.
-		return fmt.Errorf("Not all messages are sent to Splunk, time is up. Force close.")
-	}
+	t.Ticker.Stop()
+	t.SendLogs()
 	return nil
 }
 
