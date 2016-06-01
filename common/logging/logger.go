@@ -1,17 +1,17 @@
 package logging
 
 import (
+	"fmt"
 	"io"
 	"log"
-	"fmt"
 )
 
 const (
-	DebugLevel LogLevel = iota
-	WarningLevel
-	InfoLevel
-	ErrorLevel
-	FatalLevel
+	LevelDebug LogLevel = iota
+	LevelWarning
+	LevelInfo
+	LevelError
+	LevelFatal
 )
 
 type LogLevel int
@@ -25,20 +25,20 @@ func AddTarget(target io.Writer, minLevel LogLevel) error {
 		return fmt.Errorf("Nil cannot be added as a log target!")
 	}
 
-	for level := DebugLevel; level <= FatalLevel; level++ {
+	for level := LevelDebug; level <= LevelFatal; level++ {
 		// Add the target to the selected levels
 		if minLevel <= level {
 			var levelPrefix string
 			switch level {
-			case DebugLevel:
+			case LevelDebug:
 				levelPrefix = "DEBUG:   "
-			case InfoLevel:
+			case LevelInfo:
 				levelPrefix = "INFO:    "
-			case WarningLevel:
+			case LevelWarning:
 				levelPrefix = "WARNING: "
-			case ErrorLevel:
+			case LevelError:
 				levelPrefix = "ERROR:   "
-			case FatalLevel:
+			case LevelFatal:
 				levelPrefix = "FATAL:   "
 			default:
 				return fmt.Errorf("Invalid level specified while adding log target! Requested log level: %v", minLevel)
@@ -59,47 +59,47 @@ func AddTarget(target io.Writer, minLevel LogLevel) error {
 
 //// Debug
 func Debug(v ...interface{}) {
-	printAll(DebugLevel, v...)
+	printAll(LevelDebug, v...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	printAllf(DebugLevel, format, v...)
+	printAllf(LevelDebug, format, v...)
 }
 
 //// Info
 func Info(v ...interface{}) {
-	printAll(InfoLevel, v...)
+	printAll(LevelInfo, v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	printAllf(InfoLevel, format, v...)
+	printAllf(LevelInfo, format, v...)
 }
 
 //// Warning
 func Warning(v ...interface{}) {
-	printAll(WarningLevel, v...)
+	printAll(LevelWarning, v...)
 }
 
 func Warningf(format string, v ...interface{}) {
-	printAllf(WarningLevel, format, v...)
+	printAllf(LevelWarning, format, v...)
 }
 
 //// Error
 func Error(v ...interface{}) {
-	printAll(ErrorLevel, v...)
+	printAll(LevelError, v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	printAllf(ErrorLevel, format, v...)
+	printAllf(LevelError, format, v...)
 }
 
 //// Fatal
 func Fatal(v ...interface{}) {
-	printAll(FatalLevel, v...)
+	printAll(LevelFatal, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	printAllf(FatalLevel, format, v...)
+	printAllf(LevelFatal, format, v...)
 }
 
 // Private implementations
@@ -114,7 +114,7 @@ func printAll(level LogLevel, v ...interface{}) {
 		if target == nil {
 			continue
 		}
-		if level == FatalLevel {
+		if level == LevelFatal {
 			target.Fatal(v...)
 		} else {
 			target.Print(v...)
@@ -133,7 +133,7 @@ func printAllf(level LogLevel, format string, v ...interface{}) {
 		if target == nil {
 			continue
 		}
-		if level == FatalLevel {
+		if level == LevelFatal {
 			target.Fatalf(format, v...)
 		} else {
 			target.Printf(format, v...)
