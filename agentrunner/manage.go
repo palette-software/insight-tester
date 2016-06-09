@@ -44,7 +44,7 @@ func controlService(name string, cmd svc.Cmd, to svc.State) error {
 	}
 	defer m.Disconnect()
 
-	var cmdString string;
+	var cmdString string
 	switch cmd {
 	case svc.Stop:
 		cmdString = "Stopping"

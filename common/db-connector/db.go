@@ -16,7 +16,7 @@ type DbConnector struct {
 	Host     string `yaml:"Host"`
 	Port     int    `yaml:"Port"`
 	Database string `yaml:"Database"`
-	Schema	 string `yaml:"Schema"`
+	Schema   string `yaml:"Schema"`
 	User     string `yaml:"User"`
 	Password string `yaml:"Password"`
 }
@@ -68,8 +68,6 @@ func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc) erro
 
 	var values = make([]interface{}, column_count)
 	for i, _ := range values {
-		//var ii interface{}
-		//values[i] = &ii
 		values[i] = new(interface{})
 	}
 
@@ -82,50 +80,6 @@ func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc) erro
 		rowCount++
 		handler(columns, values)
 	}
-
-	//values := make([]interface{}, column_count)
-	//valuePtrs := make([]interface{}, column_count)
-	//
-	//for rows.Next() {
-	//
-	//	for i, _ := range columns {
-	//		valuePtrs[i] = &values[i]
-	//	}
-	//
-	//	rows.Scan(valuePtrs...)
-	//
-	//	for i, col := range columns {
-	//
-	//		var v interface{}
-	//
-	//		val := values[i]
-	//
-	//		b, ok := val.([]byte)
-	//
-	//		if (ok) {
-	//			v = string(b)
-	//		} else {
-	//			v = val
-	//		}
-	//
-	//		fmt.Println(col, v)
-	//	}
-	//}
-
-	//rowCount := 0
-	//for rows.Next() {
-	//	rowCount++
-	//	handler(rows)
-	//
-	//	//var count int
-	//	//var hostName string
-	//	//rows.Scan(&count, &hostName)
-	//	//if !checkTest(count, test) {
-	//	//	expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
-	//	//	log.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]", host, hostName, test.Description, expected, count, time.Since(start))
-	//	//	return false
-	//	//}
-	//}
 
 	log.Debugf("SQL STATEMENT: %v", sql_statement)
 	log.Debugf("OK: [HOST:%v] [COUNT:%v] [DURATION:%v]", dbc.Host, rowCount, time.Since(start))
