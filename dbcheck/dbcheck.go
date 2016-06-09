@@ -6,6 +6,8 @@ import (
 	log "github.com/palette-software/insight-tester/common/logging"
 	"net/http"
 	"os"
+	dbconnector "github.com/palette-software/insight-tester/common/db-connector"
+	"time"
 )
 
 func main() {
@@ -22,7 +24,7 @@ func mainWithExitCode() int {
 	}
 
 	// Read up config
-	config, err := parseConfig(os.Args[2])
+	config, err := dbconnector.ParseConfig(os.Args[2])
 	if err != nil {
 		log.Errorf("Error while loading config: %v", err)
 		return 1
@@ -54,6 +56,34 @@ func mainWithExitCode() int {
 			}
 		}
 	}
-	closeDB()
+	dbconnector.CloseDB()
 	return exitCode
+}
+
+func check(host string, dbParams ConstParams, test Test) bool {
+	db := getConnection(host, dbParams)
+	if db == nil {
+		return false
+	}
+	start := time.Now()
+	rows, err := db.Query(test.Sql)
+	if err != nil {
+		log.Errorf("Error getting rows: %v", err)
+		return false
+	}
+	defer rows.Close()
+	rowCount := 0
+	for rows.Next() {
+		rowCount++
+		var count int
+		var hostName string
+		rows.Scan(&count, &hostName)
+		if !checkTest(count, test) {
+			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
+			log.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]", host, hostName, test.Description, expected, count, time.Since(start))
+			return false
+		}
+	}
+	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", host, test.Description, rowCount, time.Since(start))
+	return true
 }
