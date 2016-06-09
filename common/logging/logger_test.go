@@ -1,15 +1,15 @@
 package logging
 
 import (
-	"testing"
 	"os"
+	"testing"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
 
 // Fake writer, something that we can set expectations on.
-type MockWriter struct{
+type MockWriter struct {
 	mock.Mock
 }
 

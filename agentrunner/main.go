@@ -19,8 +19,8 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/sys/windows/svc"
 	log "github.com/palette-software/insight-tester/common/logging"
+	"golang.org/x/sys/windows/svc"
 )
 
 func usage(errmsg string) {

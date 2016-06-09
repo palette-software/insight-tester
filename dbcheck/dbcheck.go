@@ -3,10 +3,11 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	dbconn "github.com/palette-software/insight-tester/common/db-connector"
 	log "github.com/palette-software/insight-tester/common/logging"
 	"net/http"
 	"os"
-	dbconnector "github.com/palette-software/insight-tester/common/db-connector"
+	"reflect"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func mainWithExitCode() int {
 	}
 
 	// Read up config
-	config, err := dbconnector.ParseConfig(os.Args[2])
+	config, err := dbconn.ParseConfig(os.Args[2])
 	if err != nil {
 		log.Errorf("Error while loading config: %v", err)
 		return 1
@@ -49,41 +50,59 @@ func mainWithExitCode() int {
 		log.Errorf("Error while loading test definitions: %v", err)
 		return 1
 	}
-	for _, host := range config.Databases.Hosts {
-		for _, test := range tests {
-			if !check(host, config.Databases.Params, test) {
-				exitCode = 1
-			}
+
+	defer dbconn.CloseDB()
+
+	for _, test := range tests {
+		if !check(config.DbConnector, test) {
+			exitCode = 1
 		}
 	}
-	dbconnector.CloseDB()
 	return exitCode
 }
 
-func check(host string, dbParams ConstParams, test Test) bool {
-	db := getConnection(host, dbParams)
-	if db == nil {
-		return false
-	}
+func check(dbconnector dbconn.DbConnector, test Test) bool {
 	start := time.Now()
-	rows, err := db.Query(test.Sql)
+	rowCount := 0
+	err := dbconnector.Query(test.Sql, func(columns []string, values []interface{}) error {
+		rowCount++
+		if len(values) < 2 {
+			return fmt.Errorf("Not enough values returned during check! SQL statement: %v", test.Sql)
+		}
+
+		count := *(values[0].(*interface{}))
+		var countType = reflect.TypeOf(count)
+
+		if countType.Kind() != reflect.Int {
+			return fmt.Errorf("Count value is expeted to be an integer, but it is %v! SQL statement: %v",
+				countType, test.Sql)
+		}
+
+		hostName := *(values[1].(*interface{}))
+		var hostNameType = reflect.TypeOf(hostName)
+
+		if hostNameType.Kind() != reflect.String {
+			return fmt.Errorf("Host name value is expeted to be a string, but it is %v! SQL statement: %v",
+				hostNameType, test.Sql)
+		}
+
+		hostName = hostName.(string)
+
+		if !checkTest(count.(int), test) {
+			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
+			return fmt.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]",
+				dbconnector.Host, hostName, test.Description, expected, count, time.Since(start))
+
+		}
+
+		return nil
+	})
+
 	if err != nil {
-		log.Errorf("Error getting rows: %v", err)
+		log.Errorf("Test query failed! Query: %v Error: %v", test.Sql, err)
 		return false
 	}
-	defer rows.Close()
-	rowCount := 0
-	for rows.Next() {
-		rowCount++
-		var count int
-		var hostName string
-		rows.Scan(&count, &hostName)
-		if !checkTest(count, test) {
-			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
-			log.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]", host, hostName, test.Description, expected, count, time.Since(start))
-			return false
-		}
-	}
-	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", host, test.Description, rowCount, time.Since(start))
+
+	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", dbconnector.Host, test.Description, rowCount, time.Since(start))
 	return true
 }
