@@ -7,7 +7,6 @@ import (
 	log "github.com/palette-software/insight-tester/common/logging"
 	"net/http"
 	"os"
-	"reflect"
 	"time"
 )
 
@@ -16,8 +15,10 @@ func main() {
 }
 
 func mainWithExitCode() int {
+	log.AddTarget(os.Stdout, log.LevelDebug)
+
 	if len(os.Args) < 3 {
-		fmt.Printf("Usage: %s test_config_json palmon_config_xml\n", os.Args[0])
+		log.Errorf("Usage: %s test_yml config_yml\n", os.Args[0])
 		return 1
 	}
 	http.DefaultTransport = &http.Transport{
@@ -31,17 +32,18 @@ func mainWithExitCode() int {
 		return 1
 	}
 
+	dbConnector := config.DbConnector
+	defer dbConnector.CloseDB()
+
 	licenseOwner := "Palette Software"
 	log.Info("Creating splunk target")
 	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, licenseOwner)
-	log.Infof("Created with error: %v", err)
 	if err == nil {
 		defer splunkLogger.Close()
 		log.AddTarget(splunkLogger, log.LevelDebug)
-		log.AddTarget(os.Stdout, log.LevelDebug)
 	} else {
 		fmt.Printf("Faield to create Splunk target.")
-		log.Error("Failed to create Splunk target for watchdog! Error: ", err)
+		log.Error("Failed to create Splunk target! Error: ", err)
 	}
 	exitCode := 0
 
@@ -51,59 +53,43 @@ func mainWithExitCode() int {
 		return 1
 	}
 
-	defer dbconn.CloseDB()
-
 	for _, test := range tests {
-		if !check(config.DbConnector, test) {
+		if !check(dbConnector, test) {
 			exitCode = 1
 		}
 	}
 	return exitCode
 }
 
-func check(dbconnector dbconn.DbConnector, test Test) bool {
+func check(dbConnector dbconn.DbConnector, test Test) bool {
 	start := time.Now()
 	rowCount := 0
-	err := dbconnector.Query(test.Sql, func(columns []string, values []interface{}) error {
+
+	var count int
+	var hostName string
+
+	err := dbConnector.Query(test.Sql, func(columns []string) error {
 		rowCount++
-		if len(values) != 2 {
+		if len(columns) != 2 {
 			return fmt.Errorf("Exactly 2 columns are expected during check! Got %v instead. SQL statement: %v",
-				len(values), test.Sql)
+				len(columns), test.Sql)
 		}
 
-		count := values[0]
-		var countType = reflect.TypeOf(count)
-
-		if countType.Kind() != reflect.Int {
-			return fmt.Errorf("Count value is expeted to be an integer, but it is %v! SQL statement: %v",
-				countType, test.Sql)
-		}
-
-		hostName := values[1]
-		var hostNameType = reflect.TypeOf(hostName)
-
-		if hostNameType.Kind() != reflect.String {
-			return fmt.Errorf("Host name value is expeted to be a string, but it is %v! SQL statement: %v",
-				hostNameType, test.Sql)
-		}
-
-		hostName = hostName.(string)
-
-		if !checkTest(count.(int), test) {
+		if !checkTest(count, test) {
 			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
 			return fmt.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]",
-				dbconnector.Host, hostName, test.Description, expected, count, time.Since(start))
+				dbConnector.Host, hostName, test.Description, expected, count, time.Since(start))
 
 		}
 
 		return nil
-	})
+	}, &count, &hostName)
 
 	if err != nil {
 		log.Errorf("Test query failed! Query: %v Error: %v", test.Sql, err)
 		return false
 	}
 
-	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", dbconnector.Host, test.Description, rowCount, time.Since(start))
+	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", dbConnector.Host, test.Description, rowCount, time.Since(start))
 	return true
 }

@@ -9,16 +9,16 @@ import (
 	"time"
 )
 
-var DBConnection *sql.DB
-var dbc_mutex sync.Mutex
-
 type DbConnector struct {
-	Host     string `yaml:"Host"`
-	Port     int    `yaml:"Port"`
-	Database string `yaml:"Database"`
-	Schema   string `yaml:"Schema"`
-	User     string `yaml:"User"`
-	Password string `yaml:"Password"`
+	Host         string `yaml:"Host"`
+	Port         int    `yaml:"Port"`
+	Database     string `yaml:"Database"`
+	Schema       string `yaml:"Schema"`
+	User         string `yaml:"User"`
+	Password     string `yaml:"Password"`
+
+	dbConnection *sql.DB
+	dbcMutex     sync.Mutex
 }
 
 func (dbc *DbConnector) getConnectionString() string {
@@ -27,22 +27,29 @@ func (dbc *DbConnector) getConnectionString() string {
 }
 
 func (dbc *DbConnector) getConnection() (*sql.DB, error) {
-	dbc_mutex.Lock()
-	defer dbc_mutex.Unlock()
+	dbc.dbcMutex.Lock()
+	defer dbc.dbcMutex.Unlock()
 
-	if DBConnection == nil {
+	if dbc.dbConnection == nil {
 		connectionString := dbc.getConnectionString()
 		var err error
-		DBConnection, err = sql.Open("postgres", connectionString)
+		dbc.dbConnection, err = sql.Open("postgres", connectionString)
 		if err != nil {
-			return nil, fmt.Errorf("Error in connecting to db: %v", err)
+			return nil, fmt.Errorf("Error in connecting to DB! Connection string: %v! Error: %v", connectionString, err)
 		}
+		log.Info("Created DB connection with connection string:", connectionString)
 	}
-	return DBConnection, nil
+	return dbc.dbConnection, nil
 }
 
-func CloseDB() {
-	DBConnection.Close()
+func (dbc *DbConnector) CloseDB() {
+	dbc.dbcMutex.Lock()
+	defer dbc.dbcMutex.Unlock()
+
+	if dbc.dbConnection == nil {
+		return
+	}
+	dbc.dbConnection.Close()
 }
 
 // This function is going to be called on each result row of the SQL statement
@@ -64,7 +71,6 @@ func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc, valu
 	if err != nil {
 		return fmt.Errorf("Failed to get columns for rows %v!", rows)
 	}
-
 
 	rowCount := 0
 	for rows.Next() {
