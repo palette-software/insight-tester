@@ -66,11 +66,12 @@ func check(dbconnector dbconn.DbConnector, test Test) bool {
 	rowCount := 0
 	err := dbconnector.Query(test.Sql, func(columns []string, values []interface{}) error {
 		rowCount++
-		if len(values) < 2 {
-			return fmt.Errorf("Not enough values returned during check! SQL statement: %v", test.Sql)
+		if len(values) != 2 {
+			return fmt.Errorf("Exactly 2 columns are expected during check! Got %v instead. SQL statement: %v",
+				len(values), test.Sql)
 		}
 
-		count := *(values[0].(*interface{}))
+		count := values[0]
 		var countType = reflect.TypeOf(count)
 
 		if countType.Kind() != reflect.Int {
@@ -78,7 +79,7 @@ func check(dbconnector dbconn.DbConnector, test Test) bool {
 				countType, test.Sql)
 		}
 
-		hostName := *(values[1].(*interface{}))
+		hostName := values[1]
 		var hostNameType = reflect.TypeOf(hostName)
 
 		if hostNameType.Kind() != reflect.String {
