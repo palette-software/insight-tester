@@ -46,9 +46,9 @@ func CloseDB() {
 }
 
 // This function is going to be called on each result row of the SQL statement
-type ProcessRowFunc func([]string, []interface{}) error
+type ProcessRowFunc func(columns []string) error
 
-func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc) error {
+func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc, valuesToFill... interface{}) error {
 	db, err := dbc.getConnection()
 	if err != nil {
 		return err
@@ -64,21 +64,16 @@ func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc) erro
 	if err != nil {
 		return fmt.Errorf("Failed to get columns for rows %v!", rows)
 	}
-	column_count := len(columns)
 
-	var values = make([]interface{}, column_count)
-	for i, _ := range values {
-		values[i] = new(interface{})
-	}
 
 	rowCount := 0
 	for rows.Next() {
-		err = rows.Scan(values...)
+		err = rows.Scan(valuesToFill...)
 		if err != nil {
 			return fmt.Errorf("Failed to scan values of row! Error: %v", err)
 		}
 		rowCount++
-		handler(columns, values)
+		handler(columns)
 	}
 
 	log.Debugf("SQL STATEMENT: %v", sql_statement)
