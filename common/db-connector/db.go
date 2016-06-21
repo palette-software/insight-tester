@@ -10,12 +10,12 @@ import (
 )
 
 type DbConnector struct {
-	Host         string `yaml:"Host"`
-	Port         int    `yaml:"Port"`
-	Database     string `yaml:"Database"`
-	Schema       string `yaml:"Schema"`
-	User         string `yaml:"User"`
-	Password     string `yaml:"Password"`
+	Host     string `yaml:"Host"`
+	Port     int    `yaml:"Port"`
+	Database string `yaml:"Database"`
+	Schema   string `yaml:"Schema"`
+	User     string `yaml:"User"`
+	Password string `yaml:"Password"`
 
 	dbConnection *sql.DB
 	dbcMutex     sync.Mutex
@@ -55,7 +55,7 @@ func (dbc *DbConnector) CloseDB() {
 // This function is going to be called on each result row of the SQL statement
 type ProcessRowFunc func(columns []string) error
 
-func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc, valuesToFill... interface{}) error {
+func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc, valuesToFill ...interface{}) error {
 	db, err := dbc.getConnection()
 	if err != nil {
 		return err
@@ -79,7 +79,10 @@ func (dbc *DbConnector) Query(sql_statement string, handler ProcessRowFunc, valu
 			return fmt.Errorf("Failed to scan values of row! Error: %v", err)
 		}
 		rowCount++
-		handler(columns)
+		err = handler(columns)
+		if err != nil {
+			return err
+		}
 	}
 
 	log.Debugf("SQL STATEMENT: %v", sql_statement)
