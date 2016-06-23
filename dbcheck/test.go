@@ -28,7 +28,7 @@ func print(description string, result bool) {
 		output += "OK"
 		output = green(output)
 	} else {
-		output += "Failed!!!!"
+		output += "FAILED"
 		output = red(output)
 	}
 	fmt.Println(output)

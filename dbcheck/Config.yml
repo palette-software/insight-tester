@@ -8,3 +8,4 @@
 
 SplunkServerAddress: "splunk-insight.palette-software.net"
 # SplunkToken: "TOKEN"
+SplunkCustomer: "DEV"
