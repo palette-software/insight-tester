@@ -42,7 +42,6 @@ func mainWithExitCode() int {
 		defer splunkLogger.Close()
 		log.AddTarget(splunkLogger, log.LevelDebug)
 	} else {
-		fmt.Printf("Faield to create Splunk target.")
 		log.Error("Failed to create Splunk target! Error: ", err)
 	}
 	exitCode := 0
