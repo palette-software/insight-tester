@@ -50,7 +50,7 @@ func AddTarget(target io.Writer, minLevel LogLevel) error {
 			}
 
 			loggers[level] = append(loggers[level],
-				log.New(target, levelPrefix, log.LstdFlags|log.LUTC|log.Lshortfile|log.Lmicroseconds))
+				log.New(target, levelPrefix, log.LstdFlags|log.LUTC|log.Lmicroseconds))
 		}
 	}
 
