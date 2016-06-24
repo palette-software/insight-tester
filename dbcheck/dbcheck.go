@@ -35,14 +35,12 @@ func mainWithExitCode() int {
 	dbConnector := config.DbConnector
 	defer dbConnector.CloseDB()
 
-	licenseOwner := "Palette Software"
 	log.Info("Creating splunk target")
-	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, licenseOwner)
+	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, config.SplunkCustomer)
 	if err == nil {
 		defer splunkLogger.Close()
 		log.AddTarget(splunkLogger, log.LevelDebug)
 	} else {
-		fmt.Printf("Faield to create Splunk target.")
 		log.Error("Failed to create Splunk target! Error: ", err)
 	}
 	exitCode := 0

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
-	log "github.com/palette-software/insight-tester/common/logging"
-	"fmt"
-	"flag"
-	"os"
 	"encoding/json"
+	"flag"
+	"fmt"
+	log "github.com/palette-software/insight-tester/common/logging"
+	"net/http"
+	"os"
 )
 
 // The base structure for a SemVer like version
@@ -28,7 +28,7 @@ type UpdateVersion struct {
 
 type FakeCommand struct {
 	timeStamp string
-	command string
+	command   string
 }
 
 // Just respond yes to every request
@@ -83,10 +83,10 @@ func main() {
 		fakeVersion := Version{6, 3, 2}
 		fakeUrl := fmt.Sprintf("https://%s:%d/updates/products/agent/versions/v1.3.2", bindAddress, bindPort)
 		fakeUpdateVersion := UpdateVersion{
-			Version:    fakeVersion,
-			Product:	"agent",
-			Md5:		"cool-md5-hash",
-			Url:		fakeUrl,
+			Version: fakeVersion,
+			Product: "agent",
+			Md5:     "cool-md5-hash",
+			Url:     fakeUrl,
 		}
 
 		if err := json.NewEncoder(w).Encode(fakeUpdateVersion); err != nil {
@@ -123,7 +123,7 @@ func main() {
 	//	err := http.ListenAndServeTLS(bindAddressWithPort, tlsCert, tlsKey, nil)
 	//	log.Fatal(err)
 	//} else {
-		err = http.ListenAndServe(bindAddressWithPort, nil)
-		log.Fatal(err)
+	err = http.ListenAndServe(bindAddressWithPort, nil)
+	log.Fatal(err)
 	//}
 }
