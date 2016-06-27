@@ -44,7 +44,8 @@ before_deploy:
 
 deploy:
   provider: releases
-  api_key: 981b2b76d8501afcc6713d880daa6ecd1ac7d301
+  api_key:
+    secure: hkyB5a0ogXW83qMlDsCoyrcTYYO3Z5oN6q7A45b5k3IsBw4ACKgZYzGh9+zoRMdBigFYHp4TCb7waRP35KDKnug486dx/K04zOWxyQ3YOCWT6TvmjgEoqZ30jRDnfSmsuhlMio5hGJnvK/08kzkF2ngzxiN251yZnYmdt2FEDsWC8ck3SU889yTVBoGGh+UZkpergpBc7tlrxnZJMfUGWAMgNzHGD+1+RBnr7JO9DIP8cCEg7xNjr4P+n78mH4qA2UAzgz1uGLanGcVVq8U75rL99Vhnc5zN0Szs3dcO/8lMl19BZnR4EW1Yf+liNJUBdtTh7FyXn8Y2RE1bm85EvE6G+ExGofXUVfI+ZePQeRPHvw2+aOF0TZn6ByVc+97N2nU2T+c8RFbzQykfK31RSgAiuw3slBC/QHyj+vG4rhpHH6/RmaYHb/jLvRbmctdYkMceseIbhAbxvpGIsv584pCfIEttnUUn3AxATjrwhRqg3Edmyzp2yF8AeJcVTEBSynvZrK/TInBEy9udMljTHcV6O1CNgmrju2VYoVZdHtefo4S2UGjIHVsLuVEoJqI3f2eaAYNoKKNVnVkZGXQKbR2G+XTRkVvEFxVKSRSp9PLwW0+jj9KCYClyCH3LocZ2NWESj5/25Gw8zDonMaarL/+7dNROjxgHc686gqvPUCI=
   file: ${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip
   skip_cleanup: true
   on:
