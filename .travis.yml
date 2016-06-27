@@ -44,13 +44,12 @@ before_deploy:
 
 deploy:
   provider: releases
-  user: palette-robot
+  api_key: 981b2b76d8501afcc6713d880daa6ecd1ac7d301
   file: ${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip
   skip_cleanup: true
   on:
     tags: true
     branch: fix-deploy
-  password:
-    secure: SOMsTPNM91hPvewobWV6A/mjVcyZtswnZbcfMGx4l66vzmHDhRTp8DwAI3LT/SBhBfv+YIOWlk9gscyhX+sxWSbyYGDHL3fgTdR1OwyyAIa/Qbqmr6RwxRBa/a/PWyLqe39Fxtdcq3NScUonBTuCP4zLtNYQ0hCRi12eIV6HsVsjybkVeIg8vzSwtlRop/1Z0+40mwu0oJU6Vn/XX8E/gNSAaBxK0ugOm3n7JgrF7sBbnddqT3RCLwDQT5uW1le5fTaS9xd/ZCVOBv4Clt9MiZDc7POXgDVmpkUMhlxn4UB/H1WsQXQzzBQVmP48X9yL54DaFdlyS14qRct4WgGAJYMCEutf9wYALp9UfmGzZ4VJnoucs3JDeBxpxg3FsdpcKfHDTeNx8oqOoMyNJh0EX0aUBnP+viGOxPQJCs8lhK3atY14RvNBMYSzYvptAwuR8U2YHDNAgwZhZbk2h481APtldjjCDUVpg9+nm31e1j9yUD1RwMQBOT2BKhag8uCmEFfiy8xzsWyQtd4LS0Ne4iewyn55qYWKxRV5SSFgOGdkcfPYkCwURKxnIzQrIqYEyChoaSXExrzWpw1NDqvc5/wDVBBM5RLINj01yt30EQ5gs1LB8RUR+fWXoUKy1bVgHPG+U/7YuAkJ+QHIHGlhwqVNAmp1jaqD0c9tqzsZKdQ=
+
 notifications:
   email: false
