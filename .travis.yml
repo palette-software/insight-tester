@@ -12,12 +12,11 @@ env:
         - GIMME_OS=windows GIMME_ARCH=386
         - GIMME_OS=windows GIMME_ARCH=amd64
     global:
-        - secure: "kIh2+CDOGHiXZBD4r1ZHLt2dOUHU/vRw4B8AxxtzSB+ZNsFrRiKHLo89oNp5s7ulICVIi/Yjd5OlJf///LLV1SfKIb5KjVeHCYg7nOjia8Aej74jE7r0MjCCeAwHVsTC27M9ZR5eKYP0HqfIomlk72P8LdGK8LzkQJgKSF4llvQuUlfPYBBlKewMq9IY8iw4quOJIcpJeBK4u/UvGnFlV5bfcqgURfZfH16fB6DUsbfcsDHe76NopGyyXjmSqj/LJcgnJI6Q8qUxL/Iu56e2ZFMiQLRHU7wybnnAt/Yd6J1OHsLX2ioWGrNtzKTvg+GeIbVz+co7x5Q12fR6v0Im12YynFY54ScF2ni9WLa+/+clHEJLjkcMWenMwHxnXlYO3om20PW5s0Po4YK6xVTxT34yDhXFQwiM3dpHa6ACqHY/KEspMawcwaXw3DIBGw+5Vzstd4PmLaGHWjh2zSx4kW0ggNn4gylV5cVb2X/UUCxK8lgG6LYQ9tEiPw+0STieSOVHObFhIpAKnQPcyvwlu0rVou/n0l5EWSuznZEHNS6ShcBduFTypv6ljSr4HdSpMcTg3eVSmTzmLZ6sseEykzqgieGYCxVGvg6uyCOyn+hEIPusoTSzZlLpjkESlmq0yKD9j+bgbZ80Ky3J3ViEO/sIq5xI8kDcfZWXKl96h/U="
-        - secure: "jF/5nVX1DvZdYr9LGpoS7xajMq9zRSPJV+eN90rZNLCiTcRUtt2LDgIKEGuzwSs+Rnwhx3sMbK8WmYtt/+3H15VIl7TmL5osThxwV2AnbMEKF3cqN1iqjnHb/MivsrB2DEi2OjrZxdxsJlUqVMbGx/r06SaWYyYAewNvoIABydR4JMC0PEEH7Guag/t4ArH0PtDos6s2rsqY/ja20t0JOcRlV0gva8bC0N2xBcS707vFRyM3XX6uT17kfLClKykR1i+6kID6SpBoHZU6QnOCUue1Qto+z0HfBn4ygt6UtPb4ztaL+7idg6hr9VljWFJX+LUcITsItOXQFX4G03POCtJeKuqtLaAHsllCE2+0jcy/6hUBF8WUsCD7PKpjnVBSDAG4VFT+Qehzqrle5oOZCiHw3KCDh7wpOwqW8/HlAlNU8OJ90q3HhQRSr0DZipUfwmCZIbdCpvRfRQ5k4xBjjB5t9WTX0XjVJB1UqJgNS0kc6u2zK3xUf7b3wQ1POQzvu5PSEKTa2wgpMMtgwMPh/uOU10Wnij69PRKkc0feuUytwhoSwSqW8n1FBMXqJBqssz1qTlTLD1Cb/rkLR15XpdBEP2eqEipWAUAa+p7IZ+oJu7xUvR+poCr3feEXpPEGqlO8aw9zNd0HA0mi385ugPa4DqAuObEyq6kpW3VVO6g="
+        - secure: "FqOqp2bWrcQ2vTVqHAj5RhvMra7sxWU4TEoTq2CWz0s20+vL/B36fOPL69kIZ9sHfcxlW76HH2hdhsHokC82rnXOLfsM6m00A8nYqhOQleuS1lGTwMqXhC019+sX7RiuX4OghvZ4Jh3QMJ3nZLBJGy6YQ0F3LH6AZVbjHoBLUpvTeNuvVI06JRqm1oUssNwjeL5r6tV0OREIslXl6Ess/RR1Zx0+aJ+Hn6XrOCO+cqs0uHCWNKlmyFl9VTjMB2WwIWsNH6YCPHtBFSfUsbyj1tDnwLXlraSLCY4kA6y/atW693Lrg18CvnaTw2sEbCKVE3K/tFd2S4CXQ1hSymQSkYGiBjrylfOCH5o//lfZptEmwjCht7e30cqcOvbUmYUEcQ29BJEWvEj0OXebFPmfxxRllBdWQppRvRiaOQJgUIKiRsQhia9NzEhXecgXp5HKqJf5CYaxatRD6WAixUj5DcIfSsxpFgJgI3DqkuQdiK4e4frWJSPNMKyFwGgrcRoMoLAdqopgx1zr2ehVhw1VxOcTZYVauJClU0chBnKnK7+TVbRk7/VknegV1+rFAFtP1GgChB2Fjs+zTjibWO5qkkU+QNj6NlPsu4V71xOnx3XbcTq9RUKY4/ymqL9W81GHKZ7smI+q47/qDrihlX1dmfqGYnMn77YcAIuWvNQ4KWo="
 
 # workaround for travis-ci/gimme#25 to pick up latest version of gimme and run again
 before_install:
-  - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+  - echo -e "machine github.com\n  login $GITHUB_TOKEN" >> ~/.netrc
   - curl -o gimme -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
   - chmod u+x gimme
   - unset GOROOT GOTOOLDIR GIMME_NO_ENV_ALIAS
@@ -40,7 +39,7 @@ after_success:
 
 deploy:
     provider: releases
-    api_key: "$GITHUB_TOKEN"
+    api_key: $GITHUB_TOKEN
     file:
         - "${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip"
     skip_cleanup: true
