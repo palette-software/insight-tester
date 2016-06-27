@@ -25,17 +25,21 @@ before_install:
   - go env
 
 script:
-    - go install -v ./...
-    - chmod ugo+x travis_run_go_test.sh
-    - ./travis_run_go_test.sh
+  - go install -v ./...
+  - chmod ugo+x travis_run_go_test.sh
+  - ./travis_run_go_test.sh
 
 after_success:
-    - cd $GOPATH/bin/
-    - export CURRENT_ENV_DIR=${GIMME_OS}_${GIMME_ARCH}
-    - export PCKG_FILE=${CURRENT_ENV_DIR}.zip
-    - mkdir -p $CURRENT_ENV_DIR
-    - cp -f $GOPATH/bin/* $CURRENT_ENV_DIR/
-    - zip -r $PCKG_FILE $CURRENT_ENV_DIR
+  - cd $GOPATH/bin/
+  - export CURRENT_ENV_DIR=${GIMME_OS}_${GIMME_ARCH}
+  - export PCKG_FILE=${CURRENT_ENV_DIR}.zip
+  - mkdir -p $CURRENT_ENV_DIR
+  - cp -f $GOPATH/bin/* $CURRENT_ENV_DIR/
+  - zip -r $PCKG_FILE $CURRENT_ENV_DIR
+
+before_deploy:
+  # It can cause the deploy to fail, if you are not in the build dir at deploy time.
+  - cd $TRAVIS_BUILD_DIR
 
 deploy:
   provider: releases
