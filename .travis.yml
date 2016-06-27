@@ -4,17 +4,15 @@ go:
     - 1.5
 
 env:
-    matrix:
-        - GIMME_OS=darwin GIMME_ARCH=386
-        - GIMME_OS=darwin GIMME_ARCH=amd64
-        - GIMME_OS=linux GIMME_ARCH=386
-        - GIMME_OS=linux GIMME_ARCH=amd64
-        - GIMME_OS=windows GIMME_ARCH=386
-        - GIMME_OS=windows GIMME_ARCH=amd64
-    global:
-        - secure: "FqOqp2bWrcQ2vTVqHAj5RhvMra7sxWU4TEoTq2CWz0s20+vL/B36fOPL69kIZ9sHfcxlW76HH2hdhsHokC82rnXOLfsM6m00A8nYqhOQleuS1lGTwMqXhC019+sX7RiuX4OghvZ4Jh3QMJ3nZLBJGy6YQ0F3LH6AZVbjHoBLUpvTeNuvVI06JRqm1oUssNwjeL5r6tV0OREIslXl6Ess/RR1Zx0+aJ+Hn6XrOCO+cqs0uHCWNKlmyFl9VTjMB2WwIWsNH6YCPHtBFSfUsbyj1tDnwLXlraSLCY4kA6y/atW693Lrg18CvnaTw2sEbCKVE3K/tFd2S4CXQ1hSymQSkYGiBjrylfOCH5o//lfZptEmwjCht7e30cqcOvbUmYUEcQ29BJEWvEj0OXebFPmfxxRllBdWQppRvRiaOQJgUIKiRsQhia9NzEhXecgXp5HKqJf5CYaxatRD6WAixUj5DcIfSsxpFgJgI3DqkuQdiK4e4frWJSPNMKyFwGgrcRoMoLAdqopgx1zr2ehVhw1VxOcTZYVauJClU0chBnKnK7+TVbRk7/VknegV1+rFAFtP1GgChB2Fjs+zTjibWO5qkkU+QNj6NlPsu4V71xOnx3XbcTq9RUKY4/ymqL9W81GHKZ7smI+q47/qDrihlX1dmfqGYnMn77YcAIuWvNQ4KWo="
-
-# workaround for travis-ci/gimme#25 to pick up latest version of gimme and run again
+  matrix:
+  # - GIMME_OS=darwin GIMME_ARCH=386
+  # - GIMME_OS=darwin GIMME_ARCH=amd64
+  # - GIMME_OS=linux GIMME_ARCH=386
+  - GIMME_OS=linux GIMME_ARCH=amd64
+  # - GIMME_OS=windows GIMME_ARCH=386
+  # - GIMME_OS=windows GIMME_ARCH=amd64
+  global:
+  - secure: FqOqp2bWrcQ2vTVqHAj5RhvMra7sxWU4TEoTq2CWz0s20+vL/B36fOPL69kIZ9sHfcxlW76HH2hdhsHokC82rnXOLfsM6m00A8nYqhOQleuS1lGTwMqXhC019+sX7RiuX4OghvZ4Jh3QMJ3nZLBJGy6YQ0F3LH6AZVbjHoBLUpvTeNuvVI06JRqm1oUssNwjeL5r6tV0OREIslXl6Ess/RR1Zx0+aJ+Hn6XrOCO+cqs0uHCWNKlmyFl9VTjMB2WwIWsNH6YCPHtBFSfUsbyj1tDnwLXlraSLCY4kA6y/atW693Lrg18CvnaTw2sEbCKVE3K/tFd2S4CXQ1hSymQSkYGiBjrylfOCH5o//lfZptEmwjCht7e30cqcOvbUmYUEcQ29BJEWvEj0OXebFPmfxxRllBdWQppRvRiaOQJgUIKiRsQhia9NzEhXecgXp5HKqJf5CYaxatRD6WAixUj5DcIfSsxpFgJgI3DqkuQdiK4e4frWJSPNMKyFwGgrcRoMoLAdqopgx1zr2ehVhw1VxOcTZYVauJClU0chBnKnK7+TVbRk7/VknegV1+rFAFtP1GgChB2Fjs+zTjibWO5qkkU+QNj6NlPsu4V71xOnx3XbcTq9RUKY4/ymqL9W81GHKZ7smI+q47/qDrihlX1dmfqGYnMn77YcAIuWvNQ4KWo=
 before_install:
   - echo -e "machine github.com\n  login $GITHUB_TOKEN" >> ~/.netrc
   - curl -o gimme -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
@@ -49,5 +47,10 @@ deploy:
   api_key:
     secure: jcj2lq8KARWb+AnONzcoN22ya8NaQgH+M3VFR5YjibPWgVzQv1lQ4Y85ude457N1CdgnDEWzj9GGwVw33GGq34OtCMwFTFT8tWD93ZogViPS2QnYLs3C3m1xUgg6ws8H6Bf0VOvI4RfxffaB3vrpNd7xvcJOowQu6ZkHsTZRKC2SBx+GG5GXJHT8TQorc7Ds6MtAo1Rf9Q+NJqjGgmYVS04aFNQcQMID+VibdNA7r0YLDDnbe9LjbGvHctR1/Mv6+1e7kNMcpMXa2KsDGp4eoY2OTWrumlbx+F6+Sc9neI0Nbi88cr1UA0s2eubOXacylel8vYLYUenlaahLzb0fFwrdk7uaWsqQ8dxwG1iS6FJvNnlGZb48S1R/x9l/HGzYBj2+A7CX2NX5oZPmH1pMgCp+FmCOaojEpNdEFDGbGtLq9tOVt4k/5y6qj6jB3u10OMdU6n0et3sMQiDjbYQlyIUXzfex55BM53hTYirCYQsk9x8oYyPV9wv4RHW2ydrjE0IMiGL/YmI4xcUx8VvuiIMdhVjzdi3/B0H7VhjD8WluQKkSboIEXoJvtMyATjnEuptsRTXozkoTvfk/FRjklKAtKFrkIrXWFiXUZY4xiv0VO8ta/OmAuw8AJsCufe7wvML5CsXi8Jj32WzvgKEY0T5nwJlcy1iTRUjNnHMzLb8=
   file: ${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: fix-deploy
+
 notifications:
   email: false
