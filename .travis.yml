@@ -38,13 +38,14 @@ after_success:
     - zip -r $PCKG_FILE $CURRENT_ENV_DIR
 
 deploy:
-    provider: releases
-    api_key: $GITHUB_TOKEN
-    file:
-        - "${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip"
-    skip_cleanup: true
-    on:
-        tags: true
-
+  provider: releases
+  user: palette-robot
+  password:
+    secure: FQDnvXWgkzRFcd/64uEVuX6uoq66b8ADbejju+IEpJGV1Imo/TX08Hkl/G11IKzaOhpGCr1Ypfaf28mlzZHRnoOUTkKq9Dv79rH6d26h2R1dZnSSffPbvPVoEqDCWTAPRQwMHCPMcOdl292AM1WkrfNaJDo1G6UpoMnunDXg/5uQGCVBiZqGRSNIrjz/VQxaSHZn/HGhk+3jU97g0Iriu6GSddIC/iyeMUGcAQjoPCFbRspYBWgbozilzKr5BLsHkMwfNZ7B5G8scnjlD6gpC+b3Wq2o7Yg7KRzYkVEOAQM9DC/Yrv60HyPyPnuAWWcaNX44FzE/lwO8onlR4Z+lcneYzRrWQ9d2n26GBvAG13BIbysohf7X+fKmpXLxxW8rDG+PqRhYifWd46926DNxYQduktSzgIReKnkyHjn9uUMmiEQaFQFSVYil2UgjF5S8zM1XAJPBBlcZET4z0l1RK0OXrm3PRqY2VTJ328eOCZTHJcX5qI02a/Mbe5MLxQBjT06bVltntldQLvDbo94w9LCfRJTN1uAdQMgAyiQ7dDB/S3W0/1/5ufvX6KZn4IfY1cfSLx/gsUTSv0J1u3juyE5rtDQicFqwABBJhmMtSF1fYqxj3feuN/2UIUi8ivWBSWHrm2W9M0lgXvfj6FmiGr97Jar9lq52cb0hD0GLM6c=
+  file:
+  - ${GOPATH}/bin/${GIMME_OS}_${GIMME_ARCH}.zip
+  skip_cleanup: true
+  on:
+    tags: true
 notifications:
-    email: false
+  email: false
