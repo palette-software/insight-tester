@@ -5,15 +5,17 @@ go:
 
 env:
   matrix:
-  # - GIMME_OS=darwin GIMME_ARCH=386
-  # - GIMME_OS=darwin GIMME_ARCH=amd64
-  # - GIMME_OS=linux GIMME_ARCH=386
-  - GIMME_OS=linux GIMME_ARCH=amd64
-  # - GIMME_OS=windows GIMME_ARCH=386
-  # - GIMME_OS=windows GIMME_ARCH=amd64
+    - GIMME_OS=darwin GIMME_ARCH=386
+    - GIMME_OS=darwin GIMME_ARCH=amd64
+    - GIMME_OS=linux GIMME_ARCH=386
+    - GIMME_OS=linux GIMME_ARCH=amd64
+    - GIMME_OS=windows GIMME_ARCH=386
+    - GIMME_OS=windows GIMME_ARCH=amd64
   global:
-  - secure: "Zo/Kd+BrXsHWT+GrmfoJECSwg0jNc9PICDBvi/TBufwoX8Xy9lMEhhXHGrGuWXYwbzFe2nnV/9Zvu6a32fFNjDHo9nWUcK2lBxc2PgqksmS48g420yhZEy/SG8KQynLWVL6Wp/YpJ2YAiSC11/MKtgAD/pU8g/bqyJvntHeRdU+M8MjyuuJrQRsmYnth4I8TSVuNROuAZjEtTSzcZoYtMMzEHhmkYT1HOe2TY0DZRO6dgV5UBlYhAxdfgllnXoSYqQYHZwJCASuxhGjAuG8AEHe7vDElffdAWCpotYAv32UagUW7q9M9viSObbeTHhj/QdfP9u0R/2Y55OWBKNZS4bmQGEllKCxl45DgWaPaSXx3FfZe7RycWLSuKfiCJPQQXTAQv1/3s82OcnXoFoRgKHA8ZVhwReBvbIYDBiN6qh0YzLc6lWdfts6NZufVPnuZUq0i9lJkJd51rQmtjsk9DuToX7LJlEIhYiBQip1dEPjNCWp5QFJURPGSTlELtMkrdBDALJDEOt6fDB3P/LR39PR0hvClGLcrAMkeqzv0M2TkRAHahcynN5QYEWHvEIhJXg19a0M6vlsFCjXgVx2P170EZMW675RtLLRsjDFC/a9E97ScMu1rEtsXi/GdaRWSfz61ijuy/kPSKKIFx6YIysQ68c7jsAVVeLEicGjqTDA="
+    - secure: "Zo/Kd+BrXsHWT+GrmfoJECSwg0jNc9PICDBvi/TBufwoX8Xy9lMEhhXHGrGuWXYwbzFe2nnV/9Zvu6a32fFNjDHo9nWUcK2lBxc2PgqksmS48g420yhZEy/SG8KQynLWVL6Wp/YpJ2YAiSC11/MKtgAD/pU8g/bqyJvntHeRdU+M8MjyuuJrQRsmYnth4I8TSVuNROuAZjEtTSzcZoYtMMzEHhmkYT1HOe2TY0DZRO6dgV5UBlYhAxdfgllnXoSYqQYHZwJCASuxhGjAuG8AEHe7vDElffdAWCpotYAv32UagUW7q9M9viSObbeTHhj/QdfP9u0R/2Y55OWBKNZS4bmQGEllKCxl45DgWaPaSXx3FfZe7RycWLSuKfiCJPQQXTAQv1/3s82OcnXoFoRgKHA8ZVhwReBvbIYDBiN6qh0YzLc6lWdfts6NZufVPnuZUq0i9lJkJd51rQmtjsk9DuToX7LJlEIhYiBQip1dEPjNCWp5QFJURPGSTlELtMkrdBDALJDEOt6fDB3P/LR39PR0hvClGLcrAMkeqzv0M2TkRAHahcynN5QYEWHvEIhJXg19a0M6vlsFCjXgVx2P170EZMW675RtLLRsjDFC/a9E97ScMu1rEtsXi/GdaRWSfz61ijuy/kPSKKIFx6YIysQ68c7jsAVVeLEicGjqTDA="
+
 before_install:
+  # workaround for travis-ci/gimme#25 to pick up latest version of gimme and run again
   - echo -e "machine github.com\n  login $GITHUB_TOKEN" >> ~/.netrc
   - curl -o gimme -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
   - chmod u+x gimme
