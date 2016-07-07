@@ -78,6 +78,8 @@ func check(dbConnector dbconn.DbConnector, test Test) bool {
 			return fmt.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]",
 				dbConnector.Host, hostName, test.Description, expected, count, time.Since(start))
 
+		} else {
+			log.Debugf("Result: %v -> %v ", hostName, count)
 		}
 
 		return nil
