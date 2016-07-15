@@ -7,7 +7,7 @@ env:
     matrix:
         # - TMP_GIMME_OS=darwin TMP_GIMME_ARCH=386 TMP_GIMME_TYPE=binary
         # - TMP_GIMME_OS=darwin TMP_GIMME_ARCH=amd64 TMP_GIMME_TYPE=binary
-        - TMP_GIMME_OS=linux TMP_GIMME_ARCH=386 TMP_GIMME_TYPE=binary
+        # - TMP_GIMME_OS=linux TMP_GIMME_ARCH=386 TMP_GIMME_TYPE=binary
         - TMP_GIMME_OS=linux TMP_GIMME_ARCH=amd64 TMP_GIMME_TYPE=binary
         # - TMP_GIMME_OS=windows TMP_GIMME_ARCH=386 TMP_GIMME_TYPE=binary
         # - TMP_GIMME_OS=windows TMP_GIMME_ARCH=amd64 TMP_GIMME_TYPE=binary
