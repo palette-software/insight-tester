@@ -20,7 +20,7 @@ before_install:
   - export GIMME_ARCH=${TMP_GIMME_ARCH}
   - export GIMME_TYPE=${TMP_GIMME_TYPE}
   - echo -e "machine github.com\n  login $GITHUB_TOKEN" >> ~/.netrc
-  - curl -o gimme -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
+  - curl -o gimme -sL https://raw.githubusercontent.com/travis-ci/gimme/v0.2.4/gimme
   - chmod u+x gimme
   - unset GOROOT GOTOOLDIR GIMME_NO_ENV_ALIAS
   - ./gimme -l
