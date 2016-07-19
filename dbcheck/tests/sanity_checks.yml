@@ -34,16 +34,16 @@
   Result:
     Operation: "<"
     Count: 180
--
-  Description: "p_cpu_usage report should contain parent_vizql_sessions for at least 5% of CPU coverage"
-  Sql: |
-    SELECT
-      ((sum(case when vizql_session IS NOT NULL then 1 else 0 end)::DOUBLE PRECISION /  count(1)::DOUBLE PRECISION) * 100)::integer,
-      host_name
-      from palette.p_cpu_usage
-     where process_name='tdeserver64'
-       and ts_rounded_15_secs BETWEEN  ((now() - '1 day'::interval) at time zone 'utc') and ((now() at time zone 'utc'))
-     group by host_name;
-  Result:
-    Operation: ">"
-    Count: 5
+#-
+#  Description: "p_cpu_usage report should contain parent_vizql_sessions for at least 5% of CPU coverage"
+#  Sql: |
+#    SELECT
+#      ((sum(case when vizql_session IS NOT NULL then 1 else 0 end)::DOUBLE PRECISION /  count(1)::DOUBLE PRECISION) * 100)::integer,
+#      host_name
+#      from palette.p_cpu_usage
+#     where process_name='tdeserver64'
+#       and ts_rounded_15_secs BETWEEN  ((now() - '1 day'::interval) at time zone 'utc') and ((now() at time zone 'utc'))
+#     group by host_name;
+#  Result:
+#    Operation: ">"
+#    Count: 5
