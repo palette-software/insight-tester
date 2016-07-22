@@ -61,26 +61,24 @@ func mainWithExitCode() int {
 
 func check(dbConnector dbconn.DbConnector, test Test) bool {
 	start := time.Now()
-	rowCount := 0
 
 	var count int
 	var hostName string
 
 	err := dbConnector.Query(test.Sql, func(columns []string) error {
-		rowCount++
 		if len(columns) != 2 {
 			return fmt.Errorf("Exactly 2 columns are expected during check! Got %v instead. SQL statement: %v",
 				len(columns), test.Sql)
 		}
 
+		expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
 		if !checkTest(count, test) {
-			expected := fmt.Sprintf("%s%d", test.Result.Operation, test.Result.Count)
 			return fmt.Errorf("FAILED: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]",
 				dbConnector.Host, hostName, test.Description, expected, count, time.Since(start))
-
-		} else {
-			log.Debugf("Result: %v -> %v ", hostName, count)
 		}
+
+		log.Infof("OK: [HOST:%v] [MACHINE:%v] [TEST:%v] [EXPECTED:%v] [ACTUAL:%v] [DURATION:%v]",
+			dbConnector.Host, hostName, test.Description, expected, count, time.Since(start))
 
 		return nil
 	}, &count, &hostName)
@@ -90,6 +88,5 @@ func check(dbConnector dbconn.DbConnector, test Test) bool {
 		return false
 	}
 
-	log.Infof("OK: [HOST:%v] [TEST:%v] [COUNT:%v] [DURATION:%v]", dbConnector.Host, test.Description, rowCount, time.Since(start))
 	return true
 }
