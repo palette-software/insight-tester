@@ -48,7 +48,7 @@ deploy:
   script: $TRAVIS_BUILD_DIR/release-to-github.sh
   on:
     # It should be master!!!
-    branch: master
+    branch: sanity_check_ok_logs
     tags: false
 
 notifications:
