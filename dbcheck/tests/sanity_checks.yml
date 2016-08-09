@@ -35,17 +35,17 @@
     Operation: "<"
     Count: 240
 -
-  Description: "p_cpu_usage_bootstrap_rpt should contain records no older than 240 minutes"
+  Description: "p_cpu_usage_bootstrap_rpt should contain records no older than 2 days"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(cpu_usage_ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage_bootstrap_rpt where cpu_usage_ts_rounded_15_secs >= now()::date -2"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 2880
 -
-  Description: "p_serverlogs_bootstrap_rpt should contain records no older than 240 minutes"
+  Description: "p_serverlogs_bootstrap_rpt should contain records no older than 2 days"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_serverlogs_bootstrap_rpt where ts >= now()::date -2"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 2880
 #-
 #  Description: "p_cpu_usage report should contain parent_vizql_sessions for at least 5% of CPU coverage"
 #  Sql: |
