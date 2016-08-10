@@ -25,7 +25,7 @@ echo "Creating Github realase..."
 # echo "ID_STRING=$ID_STRING"
 # RELEASE_ID=`echo $ID_STRING | cut -d',' -f 1`
 # echo "RELEASE_ID=$RELEASE_ID"
-RELEASE_ID=`python github-release-upload.py`
+export RELEASE_ID=`python github-release-upload.py`
 if [ $? -ne 0 ]; then echo "Creating new release failed"; exit 10; fi
 echo $RELEASE_ID
 if [ "X" == "X$RELEASE_ID" ]; then echo "Release ID was not found in GitHub response"; exit 10; fi
