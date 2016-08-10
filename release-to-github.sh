@@ -5,26 +5,12 @@ if [ "X" != "X$TRAVIS_TAG" ]; then echo "Tags are auto-committed by deploys, so 
 if [ "X" == "X$GITHUB_TOKEN" ]; then echo "GITHUB_TOKEN environment variable is not set!"; exit 10; fi
 if [ "X" == "X$HOME" ]; then echo "HOME environment variable is not set!"; exit 10; fi
 
-# echo "Uploading new version to Github..."
-# git push --force "https://$GITHUB_TOKEN@github.com/$OWNER/$PACKAGE.git" HEAD:master --tags
-# if [ $? -ne 0 ]; then echo "uploading new version failed"; exit 10; fi
-
+# These package are required for our "github-release-upload.py" script
 sudo -H pip install --upgrade pip
-# This package is required for our "github-release-upload.py" script
 sudo -H pip install requests
+sudo -H pip install urllib3
 
 echo "Creating Github realase..."
-# GITHUB_RESPONSE=`curl -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\": \"$PRODUCT_VERSION\"}" "https://api.github.com/repos/$OWNER/$PACKAGE/releases"`
-# # Parse the release ID from the the GitHub response.
-# # NOTE: This is an ugly workaround, because we didn't manage to get jsawk working on Travis machines.
-# echo "GitHub response: $GITHUB_RESPONSE"
-# echo `grep --version` 
-# ID_LINE=`echo "${GITHUB_RESPONSE}" | grep '^\s\s"id":\s\d*'` 
-# echo "ID_LINE=$ID_LINE"
-# ID_STRING=`echo "${ID_LINE}" | cut -d' ' -f 4`
-# echo "ID_STRING=$ID_STRING"
-# RELEASE_ID=`echo $ID_STRING | cut -d',' -f 1`
-# echo "RELEASE_ID=$RELEASE_ID"
 export RELEASE_ID=`python github-release-upload.py`
 if [ $? -ne 0 ]; then echo "Creating new release failed"; exit 10; fi
 echo $RELEASE_ID
