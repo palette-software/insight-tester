@@ -29,7 +29,7 @@ def main():
     # print r.status_code, r.reason
     # print r.text
     responseJson = r.json()
-    if r.status_code == 200:
+    if r.status_code == 200 or r.status_code == 201:
         releaseId = responseJson['id']
         if releaseId is None:
             # This is unexpected. There is supposed to be a Github release ID in the response JSON.
@@ -66,7 +66,7 @@ def main():
                 sys.exit(0)
 
     # Github release ID was not found, and the response code was unexpected anyway
-    print 'Response status code:' + r.status_code
+    print 'Response status code: ', r.status_code
     print 'Response message: ' + r.text
     sys.exit(3)
 
