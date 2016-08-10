@@ -38,17 +38,6 @@ before_deploy:
   # It can cause the deploy to fail, if you are not in the build dir at deploy time.
   - cd $TRAVIS_BUILD_DIR
 
-# deploy:
-#   provider: releases
-#   api_key:
-#     secure: "eEABG6TD6/oaM6pd64wDmNYWkwdGg2SNtJqgPNW4chO1gUZqdtVKzsv5LGfYFNpMPcuypsnL/2+6FACCfpg8JzvkTdNEGaYUMNyXecJAU39n90gbxlvke/LoFtn0z4LNTl17VaJebu7X7elSo0Wiu6RKahR8UB47hIAEkyVmjX9sPOFdWuhZ9j5Hq9rk+2bYVmnNQuZcruRaK8MYqRpXWwiNUQZK+mBPvn7/muQWlZT93Vrwg059m99iN1LZIkVvRqoFCDJrBwBUl7Bhv51aAkk/ozXR/TX2/mSwEcbA36RFRC+hhVJ45J4JeRN+vctkpiTqJuDyYhw5tvXAIZ9cmPEso60nv0/8XnRM/FJh0OoPHGXLAmLWuTixjjBVjbSbBnuYOFXxav5pkhk9auqiUV2cywvc9ZZh3+2RPYRqP7KH2nKzj1SK0CnfBiN8iwOu2WbCDswKrLb6Z4uEUyo69U5V+IYovKTiweJneDUZmbndcGxmm2sr3l/1+jVmPf0abjMQrzdxNqXvIiu7+sy8HG9EADIpOhONcY3oqU/9QxZOnlJh88Pzl7J0Mri+Sx4KJPRh2rE80jlHyE1z76UYQgoqj49V39x9N+QGlWnI4HavkkWysLJXbly4LJDvii9hHECq981gzxMbCNkTWuZo2X96c1JaY93IihcleZB9gwU="
-#   file:
-#   - ${GOPATH}/bin/${GOOS}_${GOARCH}.zip
-#   skip_cleanup: true
-#   on:
-#     tags: true
-
-
 deploy:
   skip_cleanup: true
   provider: script
