@@ -29,6 +29,8 @@ export RELEASE_ID=`python github-release-upload.py`
 if [ $? -ne 0 ]; then echo "Creating new release failed"; exit 10; fi
 echo $RELEASE_ID
 if [ "X" == "X$RELEASE_ID" ]; then echo "Release ID was not found in GitHub response"; exit 10; fi
+# Check if RELEASE_ID is a valid integer
+if [[ $RELEASE_ID =~ ^-?[0-9]+$ ]]; then echo "Release ID is not a valid integer"; exit 10; fi
 
 echo "Uploading Github realase asset..."
 curl --progress-bar \
