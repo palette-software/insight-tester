@@ -9,6 +9,9 @@ if [ "X" == "X$HOME" ]; then echo "HOME environment variable is not set!"; exit 
 # git push --force "https://$GITHUB_TOKEN@github.com/$OWNER/$PACKAGE.git" HEAD:master --tags
 # if [ $? -ne 0 ]; then echo "uploading new version failed"; exit 10; fi
 
+# This package is required for our "github-release-upload.py" script
+pip install requests
+
 echo "Creating Github realase..."
 # GITHUB_RESPONSE=`curl -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\": \"$PRODUCT_VERSION\"}" "https://api.github.com/repos/$OWNER/$PACKAGE/releases"`
 # # Parse the release ID from the the GitHub response.
