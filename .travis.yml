@@ -29,6 +29,7 @@ script:
 
 after_success:
   - cd $GOPATH/bin/
+  - export PCKG_DIR=`pwd`
   - export CURRENT_ENV_DIR=${GOOS}_${GOARCH}
   - export PCKG_FILE=${CURRENT_ENV_DIR}.zip
   - mkdir -p $CURRENT_ENV_DIR/sanity_check
