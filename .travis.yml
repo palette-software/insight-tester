@@ -1,4 +1,5 @@
 language: go
+sudo: required
 
 go:
   - 1.6
@@ -11,7 +12,10 @@ env:
     - TMP_GOOS=darwin TMP_GOARCH=amd64
     - TMP_GOOS=darwin TMP_GOARCH=386
   global:
-    - secure: "FqOqp2bWrcQ2vTVqHAj5RhvMra7sxWU4TEoTq2CWz0s20+vL/B36fOPL69kIZ9sHfcxlW76HH2hdhsHokC82rnXOLfsM6m00A8nYqhOQleuS1lGTwMqXhC019+sX7RiuX4OghvZ4Jh3QMJ3nZLBJGy6YQ0F3LH6AZVbjHoBLUpvTeNuvVI06JRqm1oUssNwjeL5r6tV0OREIslXl6Ess/RR1Zx0+aJ+Hn6XrOCO+cqs0uHCWNKlmyFl9VTjMB2WwIWsNH6YCPHtBFSfUsbyj1tDnwLXlraSLCY4kA6y/atW693Lrg18CvnaTw2sEbCKVE3K/tFd2S4CXQ1hSymQSkYGiBjrylfOCH5o//lfZptEmwjCht7e30cqcOvbUmYUEcQ29BJEWvEj0OXebFPmfxxRllBdWQppRvRiaOQJgUIKiRsQhia9NzEhXecgXp5HKqJf5CYaxatRD6WAixUj5DcIfSsxpFgJgI3DqkuQdiK4e4frWJSPNMKyFwGgrcRoMoLAdqopgx1zr2ehVhw1VxOcTZYVauJClU0chBnKnK7+TVbRk7/VknegV1+rFAFtP1GgChB2Fjs+zTjibWO5qkkU+QNj6NlPsu4V71xOnx3XbcTq9RUKY4/ymqL9W81GHKZ7smI+q47/qDrihlX1dmfqGYnMn77YcAIuWvNQ4KWo="
+    - secure: "omw0SJff3lD9tIM1LSeWoDotXVyMbF2mNi6ZoIQa+dMSvHY+aQ7C9vLcCz9xaBHcwhwfIO4Fely7+vPw+rBpcYQyGPp1PxDLBsHuEHLN1QR5hzAZ84aVQTg8rWhTEikvdonBWJw8388g+ZPUIhlUy31QCNQXBEWCl3G2yljsfaxde2Ju0gZx+gcmtSyQZeNTGGap7GZwZ+MLfseZp45TlR9OgyqjMLNFXVdM8bQ7g6DHCVgQduxDCachF0wmZ38O8T5M3qZf+5I0Zq39tuVyT6R3FHsyrDcK4GqLNqabTU0u9QwN77P/JUGEtgw4sZIaSBfQ35E4vVT3RhA85eaSLhf8AOdwAv9svWk+xsYlDlLj800Lk4YCaBYOmnAurwLS4i1csyoaAlnLzE4BDfNVkb2GMUekroK+hxVgsVMI8Gjz3RkkPxWhuN977eT8LL4gFqjRKxwEBC8zVTZYgGm4utLJOwYtXFq9zjeZndOtH+MUPGCeWxdHytMAGiJA1Jm3UJPYS6vdJnGZy2z4lKB2UTZBzFRaXqZv2HZ4ejvYJFVG1eMdp+S+r+gh6HWb4zTNz5tyalMUFXYLgARX116SFV6KClIXXX0E02B4h7/5bQpxE9d2Ts68rhrDukCrr5pqPQwLciQKmcN+vT/ALuoWdWQVH5B6zyqCQk5LVcCD8so="
+    - PRODUCT_VERSION=v1.0.$TRAVIS_BUILD_NUMBER
+    - OWNER=palette-software
+    - PACKAGE=insight-tester
 
 before_install:
   - export GOOS=${TMP_GOOS}
@@ -39,13 +43,13 @@ before_deploy:
   - cd $TRAVIS_BUILD_DIR
 
 deploy:
-  provider: releases
-  api_key:
-    secure: "eEABG6TD6/oaM6pd64wDmNYWkwdGg2SNtJqgPNW4chO1gUZqdtVKzsv5LGfYFNpMPcuypsnL/2+6FACCfpg8JzvkTdNEGaYUMNyXecJAU39n90gbxlvke/LoFtn0z4LNTl17VaJebu7X7elSo0Wiu6RKahR8UB47hIAEkyVmjX9sPOFdWuhZ9j5Hq9rk+2bYVmnNQuZcruRaK8MYqRpXWwiNUQZK+mBPvn7/muQWlZT93Vrwg059m99iN1LZIkVvRqoFCDJrBwBUl7Bhv51aAkk/ozXR/TX2/mSwEcbA36RFRC+hhVJ45J4JeRN+vctkpiTqJuDyYhw5tvXAIZ9cmPEso60nv0/8XnRM/FJh0OoPHGXLAmLWuTixjjBVjbSbBnuYOFXxav5pkhk9auqiUV2cywvc9ZZh3+2RPYRqP7KH2nKzj1SK0CnfBiN8iwOu2WbCDswKrLb6Z4uEUyo69U5V+IYovKTiweJneDUZmbndcGxmm2sr3l/1+jVmPf0abjMQrzdxNqXvIiu7+sy8HG9EADIpOhONcY3oqU/9QxZOnlJh88Pzl7J0Mri+Sx4KJPRh2rE80jlHyE1z76UYQgoqj49V39x9N+QGlWnI4HavkkWysLJXbly4LJDvii9hHECq981gzxMbCNkTWuZo2X96c1JaY93IihcleZB9gwU="
-  file:
-  - ${GOPATH}/bin/${GOOS}_${GOARCH}.zip
   skip_cleanup: true
+  provider: script
+  # Only deploy from the master branch (and if we don't have a tag specified, because they are auto-committed)
+  script: $TRAVIS_BUILD_DIR/release-to-github.sh
   on:
-    tags: true
+    branch: master
+    tags: false
+
 notifications:
   email: false
