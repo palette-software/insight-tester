@@ -33,7 +33,7 @@ def main():
         releaseId = responseJson['id']
         if releaseId is None:
             # This is unexpected. There is supposed to be a Github release ID in the response JSON.
-            print 'Error! Release ID was not found for the newly create Github release! Response:'
+            print 'Error! Release ID was not found for the newly created Github release! Response:'
             print r.text
             sys.exit(1)
 
