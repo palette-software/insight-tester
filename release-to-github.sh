@@ -12,8 +12,10 @@ sudo -H pip install urllib3
 
 echo "Creating Github realase..."
 export RELEASE_ID=`python github-release-upload.py`
-if [ $? -ne 0 ]; then echo "Creating new release failed"; exit 10; fi
+# Although the Github release ID is expected in this variable, it might contain error codes and messages of the python script above.
+# So print it anyway, before we exit the BASH script to see the reason why we exit.
 echo $RELEASE_ID
+if [ $? -ne 0 ]; then echo "Creating new release failed"; exit 10; fi
 if [ "X" == "X$RELEASE_ID" ]; then echo "Release ID was not found in GitHub response"; exit 10; fi
 # Check if RELEASE_ID is a valid integer
 if [[ $RELEASE_ID = ^-?[0-9]+$ ]]; then echo "Release ID is not a valid integer"; exit 10; fi
