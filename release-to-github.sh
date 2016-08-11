@@ -25,6 +25,6 @@ curl --progress-bar \
      -H "Content-Type: application/octet-stream" \
      -H "Authorization: token $GITHUB_TOKEN" \
      --retry 3 \
-     --data-binary @$PCKG_FILE \
+     --data-binary @$PCKG_DIR/$PCKG_FILE \
      "https://uploads.github.com/repos/$OWNER/$PACKAGE/releases/$RELEASE_ID/assets?name=$PCKG_FILE"
 if [ $? -ne 0 ]; then echo "Uploading release asset failed"; exit 10; fi
