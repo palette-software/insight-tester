@@ -33,7 +33,8 @@ def main():
         releaseId = responseJson['id']
         if releaseId is None:
             # This is unexpected. There is supposed to be a Github release ID in the response JSON.
-            print 'Error! Release ID was not found in JSON response!'
+            print 'Error! Release ID was not found for the newly create Github release! Response:'
+            print r.text
             sys.exit(1)
 
         # We are all good, let's print the ID of the newly created Github release
@@ -43,12 +44,14 @@ def main():
     releaseAlreadyExists = False
 
     if r.status_code == 422:
+        # This is the status code we get, when the release already exists
         for error in responseJson['errors']:
             if error['code'] == "already_exists":
                 releaseAlreadyExists = True
                 break
-        if releaseAlreadyExists == False:
-            print 'Error! Release was expected to already exist, but it does not.'
+        if not releaseAlreadyExists:
+            print 'Error! Release was expected to already exist, but it does not. Response:'
+            print r.text
             sys.exit(2)
 
         r = requests.get(githubApiBaseUrl + '/repos/' + owner + '/' + package + '/releases', headers=headers)
@@ -58,7 +61,8 @@ def main():
                 releaseId = ver['id']
                 if releaseId is None:
                     # This is unexpected. There is supposed to be a Github release ID in the response JSON.
-                    print 'Error! Release ID was not found in the existing Github release!'
+                    print 'Error! Release ID was not found in the existing Github release! Response:'
+                    print r.text
                     sys.exit(1)
 
                 # We are all good, let's print the ID of the existing Github release
@@ -66,8 +70,9 @@ def main():
                 sys.exit(0)
 
     # Github release ID was not found, and the response code was unexpected anyway
-    print 'Response status code: ', r.status_code
-    print 'Response message: ' + r.text
+    print 'Unexpected response status code: ', r.status_code
+    print 'Response message: '
+    print r.text
     sys.exit(3)
 
 if __name__ == "__main__":
