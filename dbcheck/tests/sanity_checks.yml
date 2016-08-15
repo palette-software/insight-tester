@@ -5,17 +5,17 @@
     Operation: "<"
     Count: 240
 -
-  Description: "threadinfo should contain records no older than 20 minutes"
+  Description: "threadinfo should contain records no older than 60 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts))) / 60, 9999)::int as no_change_in_minutes, host_name from palette.threadinfo where ts >= now()::date -2 group by host_name"
   Result:
     Operation: "<"
-    Count: 20
+    Count: 60
 -
-  Description: "serverlogs should contain records no older than 60 minutes"
+  Description: "serverlogs should contain records no older than 180 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts))) / 60, 9999)::int as no_change_in_minutes, host_name from palette.serverlogs where ts >= now()::date -2 group by host_name"
   Result:
     Operation: "<"
-    Count: 60
+    Count: 180
 -
   Description: "p_threadinfo should contain records no older than 240 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_threadinfo where ts_rounded_15_secs >= now()::date -2"
