@@ -13,7 +13,12 @@ func MoveFilesButKeepFolders(srcFolder string, dstFolder string) filepath.WalkFu
 			//fmt.Printf("Visited: %s\n", dstPath)
 			os.MkdirAll(dstPath, os.ModePerm)
 		} else {
-			os.Rename(path, dstPath)
+			err = os.Rename(path, dstPath)
+			if err != nil {
+				fmt.Printf("Error '%s' while moving file '%s' to '%s'\n", err, path, dstPath)
+				return err
+			}
+
 			fileCounter = fileCounter + 1
 		}
 		return nil
