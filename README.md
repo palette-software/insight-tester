@@ -2,3 +2,6 @@
 
 # insight-tester
 Tools for making end-to-end testing of Palette Insight Agent
+
+## Logging
+A common logging framework can be found here, which can also send logs into Splunk via HTTPS (port 443).
