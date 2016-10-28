@@ -1,9 +1,9 @@
 -
-  Description: "http_requests should contain records no older than 240 minutes"
+  Description: "http_requests should contain records no older than 8 hours"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(created_at))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.http_requests"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 480
 -
   Description: "threadinfo should contain records no older than 60 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts))) / 60, 9999)::int as no_change_in_minutes, host_name from palette.threadinfo where ts >= now()::date -2 group by host_name"
@@ -17,23 +17,23 @@
     Operation: "<"
     Count: 180
 -
-  Description: "p_threadinfo should contain records no older than 240 minutes"
+  Description: "p_threadinfo should contain records no older than 8 hours"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_threadinfo where ts_rounded_15_secs >= now()::date -2"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 480
 -
-  Description: "p_cpu_usage should contain records no older than 240 minutes"
+  Description: "p_cpu_usage should contain records no older than 8 hours"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage where ts_rounded_15_secs >= now()::date -2"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 480
 -
-  Description: "p_cpu_usage_report should contain records no older than 240 minutes'"
+  Description: "p_cpu_usage_report should contain records no older than 8 hours'"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(cpu_usage_ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage_report where cpu_usage_ts_rounded_15_secs >= now()::date -2"
   Result:
     Operation: "<"
-    Count: 240
+    Count: 480
 -
   Description: "p_cpu_usage_bootstrap_rpt should contain records no older than 2 days"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(cpu_usage_ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage_bootstrap_rpt where cpu_usage_ts_rounded_15_secs >= now()::date -2"
