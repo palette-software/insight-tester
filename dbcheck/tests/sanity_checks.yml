@@ -29,7 +29,7 @@
     Operation: "<"
     Count: 480
 -
-  Description: "p_cpu_usage_report should contain records no older than 8 hours'"
+  Description: "p_cpu_usage_report should contain records no older than 8 hours"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(cpu_usage_ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage_report where cpu_usage_ts_rounded_15_secs >= now()::date -2"
   Result:
     Operation: "<"
