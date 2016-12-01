@@ -53,7 +53,7 @@ after_success:
 
   # build the rpm
   - cd ${TRAVIS_BUILD_DIR}/dbcheck
-  - if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then rpmbuild -bb --buildroot $(pwd) --define "version $VERSION" --define "buildrelease $TRAVIS_BUILD_NUMBER" --define 'source_dir $TRAVIS_BUILD_DIR' --define "_rpmdir $(pwd)/_build" palette-insight-sanity-check.spec; fi
+  - if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then rpmbuild -bb --buildroot $(pwd) --define "version $VERSION" --define "buildrelease 1" --define 'source_dir $TRAVIS_BUILD_DIR' --define "_rpmdir $(pwd)/_build" palette-insight-sanity-check.spec; fi
 
 before_deploy:
   # It can cause the deploy to fail, if you are not in the build dir at deploy time.
