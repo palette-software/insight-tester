@@ -52,7 +52,7 @@ after_success:
   - zip -r $PCKG_FILE $CURRENT_ENV_DIR
 
   # build the rpm
-  - cd ${TRAVIS_BUILD_DIR]/dbcheck
+  - cd ${TRAVIS_BUILD_DIR}/dbcheck
   - if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then rpmbuild -bb --buildroot $(pwd) --define "version $VERSION" --define "buildrelease $TRAVIS_BUILD_NUMBER" --define 'source_dir $TRAVIS_BUILD_DIR' --define "_rpmdir $(pwd)/_build" palette-insight-sanity-check.spec; fi
 
 before_deploy:
