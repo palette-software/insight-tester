@@ -59,10 +59,13 @@ Palette Insight Sanity Check
 
 %install
 
-mkdir -p %{target_install_dir}
-pushd %{target_install_dir}
-cp ${GOPATH}/bin/dbcheck
-cp -R ${SOURCE_DIR}/dbcheck/tests %{target_install_dir}
+mkdir -p %{buildroot}/%{target_install_dir}
+pushd %{buildroot}/%{target_install_dir}
+cp ${GOPATH}/bin/dbcheck .
+cp -R ${SOURCE_DIR}/dbcheck/tests .
+cp ${SOURCE_DIR}/dbcheck/sanity-check.sh .
+cp ${SOURCE_DIR}/dbcheck/Config_template.yml Config.yml
+sed -i -e "s/{{ gp_palette_password }}/${GP_PALETTE_PASSWORD}/" ./Config.yml
 popd
 
 %files
@@ -70,100 +73,23 @@ popd
 
 # Reject config files already listed or parent directories, then prefix files
 # with "/", then make sure paths with spaces are quoted.
-# /usr/local/bin/palette-insight-server
-/opt/insight-gp-import
-/etc/supervisord.d
-%attr(-,gpadmin,gpadmin) /tmp/create_external_dummy_table.sql
-%dir /var/log/insight-gp-import
-%dir /var/log/insight-gpfdist
+%{target_install_dir}/dbcheck
+%{target_install_dir}/tests
+%{target_install_dir}/sanity-check.sh
 
 # config files can be defined according to this
 # http://www-uxsup.csx.cam.ac.uk/~jw35/docs/rpm_config.html
-%config /etc/palette-insight-server/gp-import-config.yml
+%config %{target_install_dir}/Config.yml
 
 %clean
 # noop
 
 %pre
-case "$1" in
-  1)
-    # This is an initial install. Nothing to do.
-    true
-  ;;
-  2)
-    # This is an upgrade.
-    LOADTABLES_LOCKFILE=/tmp/PI_ImportTables_prod.flock
-
-    echo "--> Waiting for loadtables to finish"
-    # Wait with flock for the loadtables to finish
-    flock ${LOADTABLES_LOCKFILE} echo "<-- Loadtables finished"
-  ;;
-esac
+# noop
 
 %post
+# Update the customer name in the Config.yml
+sed -i -e "s/{{ splunk_host }}/${HOSTNAME/-insight/}/" %{target_install_dir}/Config.yml
 
-sed -i
-${HOSTNAME/-insight/}
-sed "s/{{ gp_palette_password }}/${GP_PALETTE_PASSWORD}/" ${SOURCE_DIR}/Config_template.yml | sed 's/{{ splunk_host }}'
-
-# Python3 and pip3 is installed by palette-insight-toolkit
-pip3 install -r /opt/insight-gp-import/requirements.txt
-
-# Make sure that the uploads folder exists
-mkdir -p /data/insight-server/uploads/palette/processing
-chown -R insight:insight /data/insight-server/uploads
-
-# Detect new service
-supervisorctl reread
-supervisorctl update
-
-# (Re)start insight-gpfdist via supervisord
-supervisorctl restart insight-gpfdist
-
-sudo -u gpadmin bash -lc "source /usr/local/greenplum-db/greenplum_path.sh && \
-    /usr/local/greenplum-db/bin/psql \
-    -q \
-    -d palette \
-    -f /opt/insight-gp-import/init_palette_schema.sql"
-
-sudo -u gpadmin bash -lc "source /usr/local/greenplum-db/greenplum_path.sh && \
-    gpstop -u"
-
-# Run initial LoadTables if necessary
-find /data/insight-server/uploads/palette/uploads | grep metadata
-METADATA_FOUND=$?
-if [ $METADATA_FOUND != 0 ]; then
-    if [ $METADATA_FOUND == 1 ]; then
-        # Run initial LoadTables as insight user
-        sudo -u insight bash -lc \
-            "mkdir -p /data/insight-server/uploads/palette/uploads/_install
-            cp /opt/insight-gp-import/9.3.2.csv.gz /data/insight-server/uploads/palette/uploads/_install/metadata-install.csv.gz
-            /opt/insight-gp-import/run_gp_import.sh"
-    else
-        echo "Failed to determine whether initial LoadTables is required or not!"
-        exit 1
-    fi
-fi
-
-# Create and drop a dummy external table to create the errors table ext_error_table
-sudo -u gpadmin bash -lc "source /usr/local/greenplum-db/greenplum_path.sh && \
-    /usr/local/greenplum-db/bin/psql \
-    -q \
-    -d palette \
-    -U palette_etl_user \
-    -f /tmp/create_external_dummy_table.sql"
-
-%postun
-case "$1" in
-  0)
-    # This is an un-installation.
-    supervisorctl stop insight-gpfdist
-  ;;
-  1)
-    # This is an upgrade.
-    # Do nothing.
-    true
-  ;;
-esac
 
 %changelog
