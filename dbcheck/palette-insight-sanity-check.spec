@@ -62,9 +62,9 @@ Palette Insight Sanity Check
 mkdir -p %{buildroot}/%{target_install_dir}
 pushd %{buildroot}/%{target_install_dir}
 cp ${GOPATH}/bin/dbcheck .
-cp -R ${SOURCE_DIR}/dbcheck/tests .
-cp ${SOURCE_DIR}/dbcheck/sanity-check.sh .
-cp ${SOURCE_DIR}/dbcheck/Config_template.yml Config.yml
+cp -R %{source_dir}/dbcheck/tests .
+cp %{source_dir}/dbcheck/sanity-check.sh .
+cp %{source_dir}/dbcheck/Config_template.yml Config.yml
 sed -i -e "s/{{ gp_palette_password }}/${GP_PALETTE_PASSWORD}/" ./Config.yml
 popd
 
