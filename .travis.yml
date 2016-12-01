@@ -13,9 +13,12 @@ env:
     - TMP_GOOS=darwin TMP_GOARCH=386
   global:
     - secure: "omw0SJff3lD9tIM1LSeWoDotXVyMbF2mNi6ZoIQa+dMSvHY+aQ7C9vLcCz9xaBHcwhwfIO4Fely7+vPw+rBpcYQyGPp1PxDLBsHuEHLN1QR5hzAZ84aVQTg8rWhTEikvdonBWJw8388g+ZPUIhlUy31QCNQXBEWCl3G2yljsfaxde2Ju0gZx+gcmtSyQZeNTGGap7GZwZ+MLfseZp45TlR9OgyqjMLNFXVdM8bQ7g6DHCVgQduxDCachF0wmZ38O8T5M3qZf+5I0Zq39tuVyT6R3FHsyrDcK4GqLNqabTU0u9QwN77P/JUGEtgw4sZIaSBfQ35E4vVT3RhA85eaSLhf8AOdwAv9svWk+xsYlDlLj800Lk4YCaBYOmnAurwLS4i1csyoaAlnLzE4BDfNVkb2GMUekroK+hxVgsVMI8Gjz3RkkPxWhuN977eT8LL4gFqjRKxwEBC8zVTZYgGm4utLJOwYtXFq9zjeZndOtH+MUPGCeWxdHytMAGiJA1Jm3UJPYS6vdJnGZy2z4lKB2UTZBzFRaXqZv2HZ4ejvYJFVG1eMdp+S+r+gh6HWb4zTNz5tyalMUFXYLgARX116SFV6KClIXXX0E02B4h7/5bQpxE9d2Ts68rhrDukCrr5pqPQwLciQKmcN+vT/ALuoWdWQVH5B6zyqCQk5LVcCD8so="
-    - PRODUCT_VERSION=v1.0.$TRAVIS_BUILD_NUMBER
+    - VERSION=1.0.$TRAVIS_BUILD_NUMBER
+    - PRODUCT_VERSION=v${VERSION}
     - OWNER=palette-software
     - PACKAGE=insight-tester
+    # GP_PALETTE_PASSWORD
+    - secure: "LdWnOffjxBKJoF5kEJz/HDj9hKCGJxrG5PyfA0XFNOOJtrshT842C1e+4AT+fDf8KFzZvNcQJi+mo11z1Pk1IhJI3w/j9vRhaub8Ts34Z1w9Ds+pr+wShUdh+A3krFQdfWncFmapD097Ztmp+6/vYji4k2ljczFqVfLDHp/4PC1uDGcKf0ubfRrRy1fvNIk23YjtZzLqp3goFIVr19JTDdk8NOXvuU+Pu+Jjhw9waUnmyE2KzZN40NenVX5omwA+y9SqNhXUwHFu9y9R9eMyHj06puEZG6RLaKvR85LK5D03K4EqsQ6X3MsG2yeL5hGAj90G52bPoyG1h2bHlkCUHgLZwgJZs0RInuEJm15Ccpv1MKCboMTYzjB6donCyvzItOgRumTrKreP6J4uBKdtx9qPHkxxcKCho1A39f4yFFOy+rH5D9Ji7R7OOZcUA8svCy/CgC3fULFiEclY0Qz4E7Vah2yenT3hppKLmJJslD4wsh0lpVdmrzbF8u/Gqp8SOSV1orw1mgV1MyhP12acDFrfJD4e2GsaXDEudcnjPK5s3eumoLoeRedRL0YYXObKXPsu5qcHA8BDJXA7unVGREZqiF41t93llP+pQhQDKqpa4mKIPGXJLOgWAGVNjfkdJ5z9hazml9vGjw5Rpisr6j4gtEVJkyHUOe3jYtOTmr4="
 
 before_install:
   - export GOOS=${TMP_GOOS}
@@ -39,6 +42,9 @@ after_success:
   # Make sure that out sanity checks are also bundled with the executable
   - cp -R $TRAVIS_BUILD_DIR/dbcheck/tests $CURRENT_ENV_DIR/sanity_check/
   - zip -r $PCKG_FILE $CURRENT_ENV_DIR
+
+  # build the rpm
+  - if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then rpmbuild -bb --buildroot $(pwd) --define "version $VERSION" --define "buildrelease $TRAVIS_BUILD_NUMBER" --define 'source_dir $TRAVIS_BUILD_DIR' --define "_rpmdir $(pwd)/_build" ../palette-insight-toolkit.spec; fi
 
 before_deploy:
   # It can cause the deploy to fail, if you are not in the build dir at deploy time.
