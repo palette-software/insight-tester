@@ -53,7 +53,7 @@ after_success:
   - cp -f $GOPATH/bin/* $CURRENT_ENV_DIR/
   - mv $CURRENT_ENV_DIR/dbcheck $CURRENT_ENV_DIR/sanity_check/
   - mv $CURRENT_ENV_DIR/csv_forker $CURRENT_ENV_DIR/sanity_check/
-  # Make sure that out sanity checks are also bundled with the executable
+  # Make sure that our sanity checks are also bundled with the executable
   - cp -R $TRAVIS_BUILD_DIR/dbcheck/tests $CURRENT_ENV_DIR/sanity_check/
   - zip -r $PCKG_FILE $CURRENT_ENV_DIR
 

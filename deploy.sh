@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 git clone https://github.com/palette-software/deploy-scripts.git
 
 if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then
