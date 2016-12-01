@@ -61,6 +61,12 @@ after_success:
   - cd ${TRAVIS_BUILD_DIR}/dbcheck
   - if [ "${CURRENT_ENV_DIR}" == "linux_amd64" ]; then rpmbuild -bb --buildroot $(pwd) --define "version $VERSION" --define "buildrelease 1" --define 'source_dir $TRAVIS_BUILD_DIR' --define "_rpmdir $(pwd)/_build" palette-insight-sanity-check.spec; fi
 
+  # Deploy hack
+  - wget https://raw.githubusercontent.com/palette-software/deploy-scripts/merge_from_others/deploy.sh
+  - chmod +x deploy.sh
+  - DEPLOY_FILE="_build/*"
+  - ./deploy.sh
+
 before_deploy:
   # It can cause the deploy to fail, if you are not in the build dir at deploy time.
   - cd $TRAVIS_BUILD_DIR
