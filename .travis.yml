@@ -64,7 +64,7 @@ after_success:
   # Deploy hack
   - wget https://raw.githubusercontent.com/palette-software/deploy-scripts/merge_from_others/deploy.sh
   - chmod +x deploy.sh
-  - DEPLOY_FILE="_build/*"
+  - export DEPLOY_FILE="_build/*"
   - ./deploy.sh
 
 before_deploy:
