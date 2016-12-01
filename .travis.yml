@@ -69,7 +69,10 @@ deploy:
   skip_cleanup: true
   provider: script
   # Only deploy from the master branch (and if we don't have a tag specified, because they are auto-committed)
-  script: $TRAVIS_BUILD_DIR/release-to-github.sh
+  script:
+    - $TRAVIS_BUILD_DIR/release-to-github.sh
+    - git clone https://github.com/palette-software/deploy-scripts.git
+    - DEPLOY_FILE="${TRAVIS_BUILD_DIR}/dbcheck/_build/*" deploy-scripts/deploy.sh
   on:
     branch: master
     tags: false
