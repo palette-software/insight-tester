@@ -64,13 +64,12 @@ after_success:
 before_deploy:
   # It can cause the deploy to fail, if you are not in the build dir at deploy time.
   - cd $TRAVIS_BUILD_DIR
-  - git clone https://github.com/palette-software/deploy-scripts.git
 
 deploy:
   skip_cleanup: true
   provider: script
   # Only deploy from the master branch (and if we don't have a tag specified, because they are auto-committed)
-  script: DEPLOY_FILE="${TRAVIS_BUILD_DIR}/dbcheck/_build/*" deploy-scripts/deploy.sh
+  script: ./deploy.sh
   on:
     branch: master
     tags: false
