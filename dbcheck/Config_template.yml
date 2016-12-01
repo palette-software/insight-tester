@@ -1,0 +1,11 @@
+DbConnector:
+    Host: 127.0.0.1
+    Port: 5432
+    User: palette_etl_user
+    Password: {{ gp_palette_password }}
+    Database: palette
+    Schema: go_test
+
+SplunkServerAddress: "splunk-insight.palette-software.net"
+# SplunkToken: "TOKEN"
+SplunkCustomer: {{ splunk_host }}
