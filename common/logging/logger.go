@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 )
 
 const (
@@ -114,10 +115,10 @@ func printAll(level LogLevel, v ...interface{}) {
 		if target == nil {
 			continue
 		}
+		target.Print(v...)
+
 		if level == LevelFatal {
-			target.Fatal(v...)
-		} else {
-			target.Print(v...)
+			os.Exit(1)
 		}
 	}
 }
@@ -133,10 +134,10 @@ func printAllf(level LogLevel, format string, v ...interface{}) {
 		if target == nil {
 			continue
 		}
+		target.Printf(format, v...)
+
 		if level == LevelFatal {
-			target.Fatalf(format, v...)
-		} else {
-			target.Printf(format, v...)
+			os.Exit(1)
 		}
 	}
 }
