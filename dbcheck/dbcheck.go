@@ -7,6 +7,7 @@ import (
 	log "github.com/palette-software/insight-tester/common/logging"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -36,7 +37,7 @@ func mainWithExitCode() int {
 	defer dbConnector.CloseDB()
 
 	log.Info("Creating splunk target")
-	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, config.SplunkCustomer)
+	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, strings.ToUpper(config.SplunkCustomer))
 	if err == nil {
 		defer splunkLogger.Close()
 		log.AddTarget(splunkLogger, log.LevelDebug)
