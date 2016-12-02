@@ -6,6 +6,6 @@ DbConnector:
     Database: palette
     Schema: go_test
 
-SplunkServerAddress: "splunk-insight.palette-software.net"
+# SplunkServerAddress: "SERVER_ADDRESS"
 # SplunkToken: "TOKEN"
 SplunkCustomer: {{ splunk_host }}
