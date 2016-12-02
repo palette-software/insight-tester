@@ -2,6 +2,7 @@ package logging
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -104,7 +105,16 @@ func (t *SplunkTarget) SendLogs() {
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", fmt.Sprintf("Splunk %s", t.Token))
-	var client http.Client
+
+	// Let's just don't give a shit if we are talking to our server at all
+	// We are too dumb to add a decent certificate to our Splunk server
+	// So according to peterb: What possible harm could one insanely ignored
+	// certificate do.
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{Transport: tr}
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Failed to send request! Exception message: ", err)
