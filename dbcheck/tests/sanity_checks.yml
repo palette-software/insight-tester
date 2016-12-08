@@ -17,17 +17,17 @@
     Operation: "<"
     Count: 180
 -
-  Description: "p_threadinfo_delta should contain records no older than 10 minutes"
+  Description: "p_threadinfo_delta should contain records no older than 60 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_threadinfo_delta where ts_rounded_15_secs >= (now() at time zone 'utc')::date - 1"
   Result:
     Operation: "<"
-    Count: 10
+    Count: 60
 -
-  Description: "p_process_class_agg_report should contain records no older than 20 minutes"
+  Description: "p_process_class_agg_report should contain records no older than 60 minutes"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_process_class_agg_report where ts_rounded_15_secs >= (now() at time zone 'utc')::date - 1"
   Result:
     Operation: "<"
-    Count: 20
+    Count: 60
 -
   Description: "p_http_requests should contain records no older than 36 hours"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(created_at))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_http_requests where created_at >= now()::date - 2"
