@@ -41,11 +41,11 @@
     Operation: "<"
     Count: 2160
 -
-  Description: "p_load_dates should contain records no older than 36 hours"
-  Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - (max(load_date) + interval'23:59'))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_load_dates where load_date >= (now() at time zone 'utc')::date - 2"
+  Description: "p_load_dates should contain records no older than 60 hours"
+  Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(load_date))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_load_dates where load_date >= (now() at time zone 'utc')::date - 2"
   Result:
     Operation: "<"
-    Count: 2160
+    Count: 3600
 -
   Description: "p_cpu_usage_bootstrap_rpt should contain records no older than 3 days"
   Sql: "select coalesce(extract('epoch' from (now() at time zone 'utc' - max(cpu_usage_ts_rounded_15_secs))) / 60, 9999)::int as no_change_in_minutes, 'NONE' from palette.p_cpu_usage_bootstrap_rpt where cpu_usage_ts_rounded_15_secs >= now()::date -3"
