@@ -20,6 +20,9 @@ type LogTargets []*log.Logger
 
 var loggers map[LogLevel]LogTargets
 
+// Just for testing (Go mock yourself)
+var osExit = os.Exit
+
 func AddTarget(target io.Writer, minLevel LogLevel) error {
 	if target == nil {
 		// Do nothing.
@@ -116,10 +119,10 @@ func printAll(level LogLevel, v ...interface{}) {
 			continue
 		}
 		target.Print(v...)
+	}
 
-		if level == LevelFatal {
-			os.Exit(1)
-		}
+	if level == LevelFatal {
+		osExit(1)
 	}
 }
 
@@ -135,9 +138,9 @@ func printAllf(level LogLevel, format string, v ...interface{}) {
 			continue
 		}
 		target.Printf(format, v...)
+	}
 
-		if level == LevelFatal {
-			os.Exit(1)
-		}
+	if level == LevelFatal {
+		osExit(1)
 	}
 }
