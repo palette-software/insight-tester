@@ -20,13 +20,15 @@ func mainWithExitCode() int {
 	log.AddTarget(os.Stdout, log.LevelDebug)
 
 	if len(os.Args) < 3 {
-		log.Fatalf("Usage: %s test_yml config_yml\n", os.Args[0])
+		log.Errorf("Usage: %s test_yml config_yml\n", os.Args[0])
+		return 1
 	}
 
 	// Read up config
 	config, err := dbconn.ParseConfig(os.Args[2])
 	if err != nil {
-		log.Fatalf("Error while loading config: %v", err)
+		log.Errorf("Error while loading config: %v", err)
+		return 1
 	}
 
 	dbConnector := config.DbConnector
