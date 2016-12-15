@@ -11,7 +11,6 @@ type Config struct {
 	DbConnector         DbConnector `yaml:"DbConnector"`
 	SplunkServerAddress string      `yaml:"SplunkServerAddress"`
 	SplunkToken         string      `yaml:"SplunkToken"`
-	SplunkCustomer      string      `yaml:"SplunkCustomer"`
 }
 
 func ParseConfig(fileName string) (*Config, error) {

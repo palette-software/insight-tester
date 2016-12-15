@@ -1,14 +1,15 @@
 package main
 
 import (
-	"crypto/tls"
-	"fmt"
-	dbconn "github.com/palette-software/insight-tester/common/db-connector"
-	log "github.com/palette-software/insight-tester/common/logging"
-	"net/http"
 	"os"
-	"strings"
+	"fmt"
 	"time"
+	"io/ioutil"
+	"regexp"
+
+	dbconn "github.com/palette-software/insight-tester/common/db-connector"
+	insight_server "github.com/palette-software/insight-server/lib"
+	log "github.com/palette-software/insight-tester/common/logging"
 )
 
 func main() {
@@ -22,9 +23,6 @@ func mainWithExitCode() int {
 		log.Errorf("Usage: %s test_yml config_yml\n", os.Args[0])
 		return 1
 	}
-	http.DefaultTransport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 
 	// Read up config
 	config, err := dbconn.ParseConfig(os.Args[2])
@@ -36,14 +34,27 @@ func mainWithExitCode() int {
 	dbConnector := config.DbConnector
 	defer dbConnector.CloseDB()
 
-	log.Info("Creating splunk target")
-	splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, strings.ToUpper(config.SplunkCustomer))
-	if err == nil {
-		defer splunkLogger.Close()
-		log.AddTarget(splunkLogger, log.LevelDebug)
+	license, err := getCustomerName()
+	if err != nil {
+		log.Error(err)
+		// Without license, we don't know the customer name, so there is
+		//  no point in logging to Splunk
+		log.Error("Performing Sanity checks without Splunk is in vain!")
+		return 1
 	} else {
-		log.Error("Failed to create Splunk target! Error: ", err)
+		log.Info("Acquired customer name from license: ", license.Name)
+
+		log.Info("Creating splunk target")
+		splunkLogger, err := log.NewSplunkTarget(config.SplunkServerAddress, config.SplunkToken, license.Name)
+		if err == nil {
+			defer splunkLogger.Close()
+			log.AddTarget(splunkLogger, log.LevelDebug)
+		} else {
+			log.Error("Failed to create Splunk target! Error: ", err)
+			return 1
+		}
 	}
+
 	exitCode := 0
 
 	tests, err := getTests(os.Args[1])
@@ -58,6 +69,29 @@ func mainWithExitCode() int {
 		}
 	}
 	return exitCode
+}
+
+func getCustomerName() (*insight_server.LicenseData, error) {
+	// Open the Insight Server config file to read the license
+	contentBytes, err := ioutil.ReadFile("/etc/palette-insight-server/server.config")
+	if err != nil {
+		return nil, fmt.Errorf("Failed to open Insight Server config file to read the license key!")
+	}
+
+	var licenseKeyExpr = regexp.MustCompile(`license_key=([\S]+)`)
+	content := string(contentBytes)
+	matchGroups := licenseKeyExpr.FindStringSubmatch(content)
+	// The first group is the entire match, this is why we expect more than one
+	if len(matchGroups) < 2 {
+		return nil, fmt.Errorf("No license key found in Insight Server config file!")
+	}
+
+	license := insight_server.UpdateLicense(matchGroups[1])
+	if license == nil {
+		return nil, fmt.Errorf("License is nil!")
+	}
+
+	return license, nil
 }
 
 func check(dbConnector dbconn.DbConnector, test Test) bool {
