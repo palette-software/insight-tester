@@ -27,11 +27,13 @@ type SplunkTarget struct {
 }
 
 type Message struct {
+	Host  string `json:"host"`
 	Event string `json:"event"`
 }
 
-func formatSplunkMessage(p string) []byte {
+func (t *SplunkTarget) formatSplunkMessage(p string) []byte {
 	m := Message{
+		Host:  t.MachineName,
 		Event: p,
 	}
 	jsonObject, err := json.Marshal(m)
@@ -79,7 +81,7 @@ func (t *SplunkTarget) DequeueLines() (b bytes.Buffer) {
 			break
 		}
 		line := fmt.Sprintf("%s", next)
-		formattedMessage := formatSplunkMessage(line)
+		formattedMessage := t.formatSplunkMessage(line)
 		if formattedMessage != nil {
 			b.Write(formattedMessage)
 		}
