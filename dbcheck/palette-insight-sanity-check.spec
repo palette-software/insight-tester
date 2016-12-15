@@ -88,8 +88,7 @@ popd
 # noop
 
 %post
-# Update the customer name in the Config.yml
-sed -i -e "s/{{ splunk_host }}/${HOSTNAME/-insight/}/" %{target_install_dir}/Config.yml
+# noop
 
 
 %changelog
