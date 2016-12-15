@@ -8,4 +8,3 @@ DbConnector:
 
 # SplunkServerAddress: "SERVER_ADDRESS"
 # SplunkToken: "TOKEN"
-SplunkCustomer: {{ splunk_host }}
