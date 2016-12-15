@@ -19,6 +19,17 @@ func (m *MockWriter) Write(p []byte) (n int, err error) {
 	return args.Int(0), args.Error(1)
 }
 
+// Fake os.Exit(int) function
+type MockOs struct {
+	mock.Mock
+}
+
+// NOTE: This method is not being tested here, code that uses this object is.
+func (m *MockOs) Exit(code int) {
+	m.Called(code)
+	return
+}
+
 // Test suite so that logger can start from zero in all tests
 type LoggerTestSuite struct {
 	suite.Suite
@@ -60,28 +71,90 @@ func (suite *LoggerTestSuite) Test_MultipleTargetsButTriggerBoth() {
 	Error("Get together and feel alright")
 }
 
-func (suite *LoggerTestSuite) Test_CallOnlyRelevantTargets() {
-	mockTargetA := new(MockWriter)
-	mockTargetB := new(MockWriter)
-	mockTargetC := new(MockWriter)
-
-	// Return value doesn't matter as we don't use it now anywhere
-	mockTargetA.On("Write", mock.Anything).Return(33, nil)
-	mockTargetC.On("Write", mock.Anything).Return(33, nil)
-
-	AddTarget(mockTargetA, LevelDebug)
-	AddTarget(mockTargetB, LevelError)
-	AddTarget(mockTargetC, LevelInfo)
-
-	Info("Useless, but true information.")
-
-	mockTargetA.AssertExpectations(suite.T())
-	mockTargetB.AssertNotCalled(suite.T(), "Write", mock.Anything)
-	mockTargetC.AssertCalled(suite.T(), "Write", mock.Anything)
-}
-
 func (suite *LoggerTestSuite) Test_NullTargetsAreNotWelcome() {
 	// Shouldn't crash on passing nil as target
 	AddTarget(nil, LevelDebug)
 	Debug("You can't stop me!")
+}
+
+// Test suite so that logger can start from zero in all tests
+type LoggerMockSuite struct {
+	suite.Suite
+	mockTargetA *MockWriter
+	mockTargetB *MockWriter
+	mockTargetC *MockWriter
+	mockOs *MockOs
+}
+
+// Initialize some mocks
+func (suite *LoggerMockSuite) SetupTest() {
+	loggers = nil
+
+	suite.mockTargetA = new(MockWriter)
+	suite.mockTargetB = new(MockWriter)
+	suite.mockTargetC = new(MockWriter)
+
+	suite.mockOs = new(MockOs)
+
+	// Patch, so that testing process won't quit on Fatal log tests
+	osExit = suite.mockOs.Exit
+}
+
+func (suite *LoggerMockSuite) TearDownTest() {
+	// Revert back to the original os.Exit() function
+	osExit = os.Exit
+
+	suite.mockTargetA.AssertExpectations(suite.T())
+	suite.mockTargetB.AssertExpectations(suite.T())
+	suite.mockTargetC.AssertExpectations(suite.T())
+	suite.mockOs.AssertExpectations(suite.T())
+}
+
+func (suite *LoggerMockSuite) Test_CallOnlyRelevantTargets() {
+	// Return value doesn't matter as we don't use it now anywhere
+	suite.mockTargetA.On("Write", mock.Anything).Return(33, nil)
+	suite.mockTargetC.On("Write", mock.Anything).Return(33, nil)
+
+	AddTarget(suite.mockTargetA, LevelDebug)
+	AddTarget(suite.mockTargetB, LevelError)
+	AddTarget(suite.mockTargetC, LevelInfo)
+
+	Info("Useless, but true information.")
+}
+
+func (suite *LoggerMockSuite) Test_Fatal() {
+	// Return value doesn't matter as we don't use it now anywhere
+	suite.mockTargetA.On("Write", mock.Anything).Return(33, nil)
+	suite.mockTargetB.On("Write", mock.Anything).Return(33, nil)
+	suite.mockTargetC.On("Write", mock.Anything).Return(33, nil)
+	suite.mockOs.On("Exit", 1)
+
+	AddTarget(suite.mockTargetA, LevelDebug)
+	AddTarget(suite.mockTargetB, LevelError)
+	AddTarget(suite.mockTargetC, LevelInfo)
+
+	Fatal("Run, everyone, run")
+
+	suite.mockOs.AssertNumberOfCalls(suite.T(), "Exit", 1)
+}
+
+func (suite *LoggerMockSuite) Test_Fatalf() {
+	// Return value doesn't matter as we don't use it now anywhere
+	suite.mockTargetA.On("Write", mock.Anything).Return(33, nil)
+	suite.mockTargetB.On("Write", mock.Anything).Return(33, nil)
+	suite.mockTargetC.On("Write", mock.Anything).Return(33, nil)
+	suite.mockOs.On("Exit", 1)
+
+	AddTarget(suite.mockTargetA, LevelDebug)
+	AddTarget(suite.mockTargetB, LevelError)
+	AddTarget(suite.mockTargetC, LevelInfo)
+
+	Fatalf("The number of the week: %d", 7)
+
+	suite.mockOs.AssertNumberOfCalls(suite.T(), "Exit", 1)
+}
+
+// Now run the mock suite
+func Test_LoggerMockSuite(t *testing.T) {
+	suite.Run(t, new(LoggerMockSuite))
 }
