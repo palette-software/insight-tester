@@ -71,8 +71,7 @@ func mainWithExitCode() int {
 
 func getCustomerName() (*insight_server.LicenseData, error) {
 	// Open the Insight Server config file to read the license
-	//contentBytes, err := ioutil.ReadFile("/etc/palette-insight-server/server.config")
-	contentBytes, err := ioutil.ReadFile("/Users/pbastyi/go-workspace/src/github.com/palette-software/insight-server/sample.config")
+	contentBytes, err := ioutil.ReadFile("/etc/palette-insight-server/server.config")
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open Insight Server config file to read the license key!")
 	}
