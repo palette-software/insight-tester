@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	log "github.com/palette-software/insight-tester/common/logging"
+	log "github.com/palette-software/go-log-targets"
 	"sync"
 	"time"
 )
