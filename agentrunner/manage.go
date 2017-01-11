@@ -13,7 +13,7 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	log "github.com/palette-software/go-log-targets/logging"
+	log "github.com/palette-software/go-log-targets"
 )
 
 func startService(name string) error {
