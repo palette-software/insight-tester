@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-import log "github.com/palette-software/insight-tester/common/logging"
+import log "github.com/palette-software/go-log-targets/logging"
 
 func readFile(fileName string, transfer chan string) error {
 	log.Infof("Reading file: %v", fileName)

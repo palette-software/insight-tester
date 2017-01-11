@@ -9,7 +9,7 @@ import (
 
 	dbconn "github.com/palette-software/insight-tester/common/db-connector"
 	insight_server "github.com/palette-software/insight-server/lib"
-	log "github.com/palette-software/insight-tester/common/logging"
+	log "github.com/palette-software/go-log-targets/logging"
 )
 
 func main() {
