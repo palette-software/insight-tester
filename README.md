@@ -1,6 +1,6 @@
 # Palette Insight Tester
 
-[![Build Status](https://travis-ci.com/palette-software/insight-tester.svg?branch=master&token=qWG5FJDvsjLrsJpXgxSJ)](https://travis-ci.com/palette-software/insight-tester)
+[![Build Status](https://travis-ci.org/palette-software/insight-tester.svg?branch=master)](https://travis-ci.com/palette-software/insight-tester)
 
 Testing tools for Palette Insight. These components are all written in Go. This toolset consists of:
 
