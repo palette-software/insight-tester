@@ -46,6 +46,7 @@ Packager: Palette Developers <developers@palette-software.com>
 
 # Add the user for the service & setup SELinux
 # ============================================
+Requires: palette-insight-toolkit
 
 %description
 Palette Insight Sanity Check
